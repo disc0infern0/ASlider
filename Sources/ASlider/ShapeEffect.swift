@@ -13,15 +13,15 @@ import SwiftUICore
 ///    .symbolEffect(.bounce, options: .repeat(1), value: helper.dragStarted)
 ///
 
-internal enum ShapeEffectOptions {
+public enum ShapeEffectOptions: Sendable {
     case effectRepeat(Int)
     static let none = Self.effectRepeat(0)
     static let once = Self.effectRepeat(1)
 }
 
-internal enum ShapeEffects { case none, pulse, bounce } //, breathe, scale, wiggle }
+public enum ShapeEffects: Sendable { case none, pulse, bounce } //, breathe, scale, wiggle }
 
-struct ShapeEffect<EQ: Equatable>: ViewModifier {
+public struct ShapeEffect<EQ: Equatable>: ViewModifier {
     let effect: ShapeEffects
     let options: ShapeEffectOptions
     let toggle: EQ
@@ -29,7 +29,7 @@ struct ShapeEffect<EQ: Equatable>: ViewModifier {
     var repeats: Int { switch options { case .effectRepeat(let repeats): repeats } }
     
     @ViewBuilder
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         // MARK: TODO - Exercise: create effects for remaining symbol Effect effects
         switch effect {
             case .none:

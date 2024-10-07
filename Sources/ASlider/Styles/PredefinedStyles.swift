@@ -8,7 +8,7 @@ import SwiftUI
 
 extension SliderStyle {
     @MainActor
-    static let classic = Self.init(
+    public static let classic = Self.init(
         trackHeight: 4,
         trackColor: .gray.opacity(0.3),
         trackMarks: .none,
@@ -25,7 +25,7 @@ extension SliderStyle {
     )
 
     @MainActor
-    static let newClassic = Self.init(
+    public static let newClassic = Self.init(
         trackHeight: 4,
         trackColor: Color( white: 0.3, opacity: 1.0),
         trackMarks: .auto,
@@ -43,7 +43,7 @@ extension SliderStyle {
         thumbShapeEffect: .bounce
     )
     @MainActor
-    static let orangey = Self.init(
+    public static let orangey = Self.init(
         trackHeight: 8  ,
         trackColor: .orange,
         trackMarks: .auto,
