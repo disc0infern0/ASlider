@@ -15,7 +15,7 @@ import SwiftUI
 ///  .classic which emulates the Apple slider,
 ///  .newClassic which updates the Apple slider with a bounce animation to the thumb and transparent selection
 
-struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
+public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     @Binding var sliderValue: Double
     let range: ClosedRange<Double>
     var label: () -> LabelContent
@@ -71,7 +71,7 @@ struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
 
     }
     @State private var alignment: Alignment = .leading
-    var body: some View {
+    public var body: some View {
         HStack(alignment: .center) {
             label()
 
