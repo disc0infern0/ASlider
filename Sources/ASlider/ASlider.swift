@@ -15,7 +15,7 @@ import SwiftUI
 ///  .classic which emulates the Apple slider,
 ///  .newClassic which updates the Apple slider with a bounce animation to the thumb and transparent selection
 
-struct ASlider<LabelContent: View, LabelMarkContent: View>: View {
+struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     @Binding var sliderValue: Double
     let range: ClosedRange<Double>
     var label: () -> LabelContent
