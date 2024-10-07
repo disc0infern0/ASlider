@@ -24,7 +24,7 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     @Environment(\.sliderStyle) var sliderStyle
     @State var sliderHelper: SliderHelper
 
-    init(
+    public init(
         value: Binding<Double>,
         in range: ClosedRange<Double>,
         label: @escaping () -> LabelContent = { EmptyView() },
@@ -39,7 +39,7 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                   label: label,
                   labelMark: labelMark)
     }
-    init( value: Binding<Int>, in range: ClosedRange<Int>,
+    public init( value: Binding<Int>, in range: ClosedRange<Int>,
           label: @escaping () -> LabelContent = { EmptyView() },
           labelMark: @escaping (_:Double)->LabelMarkContent = { d in
         Text("\(d.formatted(.number.precision(.fractionLength(1))))")
