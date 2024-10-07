@@ -7,7 +7,7 @@
 import SwiftUI
 
 extension View {
-    func sliderStyle(_ s: SliderStyle) -> some View {
+    public func sliderStyle(_ s: SliderStyle) -> some View {
         self
             .environment(\.sliderStyle, s)
     }
@@ -23,7 +23,7 @@ extension View {
     ///  }
     /// }
 
-    func sliderStyle(_ base: SliderStyle = .newClassic, modifiers: @escaping (_ style: inout SliderStyle) -> Void  ) -> some View {
+    public func sliderStyle(_ base: SliderStyle = .newClassic, modifiers: @escaping (_ style: inout SliderStyle) -> Void  ) -> some View {
 
         var newSliderStyle = base
         modifiers(&newSliderStyle)
