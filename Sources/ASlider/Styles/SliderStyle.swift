@@ -66,7 +66,8 @@ public struct SliderStyle: Equatable, Sendable {
     public struct SliderIndicator: OptionSet, Sendable {
         public let rawValue: Int
         public init(rawValue: Int) {
-            fatalError("This initializer is not supported")
+            print("This initializer is not supported: \(rawValue)")
+            self.rawValue = 0
         }
         private init(raw: Int) {
             self.rawValue = raw
