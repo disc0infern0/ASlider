@@ -30,11 +30,11 @@ public struct SliderStyle: Equatable, Sendable {
     }
     public enum Marks: Equatable, Sendable {
         case every(Double), auto
-        static let none = Self.every(0)
+        public static let none = Self.every(0)
     }
     public enum Shadow: Equatable, Sendable {
         case radius(Double)
-        static let none = Self.radius(0)
+        public static let none = Self.radius(0)
     }
     public enum ThumbShape: Equatable, Sendable {
         case none, circle, capsule, bolt, custom(String)
@@ -60,28 +60,31 @@ public struct SliderStyle: Equatable, Sendable {
     }
     public enum CentredOn: Equatable, Sendable {
         case value(Double), lastValue, lowest
-        @MainActor static var zero = Self.value(0)
+        @MainActor public static var zero = Self.value(0)
     }
 
     public struct SliderIndicator: OptionSet, Sendable {
         public let rawValue: Int
         public init(rawValue: Int) {
-            self.rawValue = rawValue
+            fatalError("This initializer is not supported")
+        }
+        private init(raw: Int) {
+            self.rawValue = raw
         }
 
-        static let thumb = SliderIndicator(rawValue: 1 << 0)
-        static let tintBar = SliderIndicator(rawValue: 1 << 1)
-        static let trackMarks = SliderIndicator(rawValue: 1 << 2)
-        static let all: SliderIndicator = [.thumb, .tintBar, .trackMarks]
+        public static let thumb = SliderIndicator(raw: 1 << 0)
+        public static let tintBar = SliderIndicator(raw: 1 << 1)
+        public static let trackMarks = SliderIndicator(raw: 1 << 2)
+        public static let all: SliderIndicator = [.thumb, .tintBar, .trackMarks]
     }
 
     public var sliderIndicator: SliderIndicator = [.thumb,.tintBar]
     public var trackHeight: Double = 4
-    public var trackColor: Color = Color( white: 0.3, opacity: 1.0)
+    public var trackColor: Color = .primary.opacity(0.5)
     public var trackMarks: Marks = .auto
     public var trackMarkWidth: Double?
     public var trackMarkHeight: Double?
-    public var trackMarkActiveColor: [Color] = [.white]
+    public var trackMarkActiveColor: [Color] = [.primary]
     public var trackMarkInActiveColor: [Color] = [.primary.opacity(0.5), .secondary.opacity(0.4)]
     public var trackMarkStyle: TrackMarkStyle = .regular
 

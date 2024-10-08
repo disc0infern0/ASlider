@@ -27,17 +27,16 @@ extension SliderStyle {
     @MainActor
     public static let newClassic = Self.init(
         trackHeight: 4,
-        trackColor: Color( white: 0.3, opacity: 1.0),
+        trackColor: .primary,
         trackMarks: .auto,
         trackMarkWidth: 4,
         labelMarks: .none,
         tintCentredOn: .zero,
         trackTintColor: .accentColor,
         trackShadow: .radius(0.4),
-
         thumbSymbol: .capsule,
         thumbTintedBorder: true,
-        thumbColor: .white,
+        thumbColor: .primary,
         thumbWidth: 20,
         thumbHeight: 30,
         thumbShapeEffect: .bounce
