@@ -53,7 +53,7 @@ final class SliderHelper {
     }
 
     func getSliderValue(of location: Double) -> Double {
-        // MARK: TODO  Use the rotation value and x/y position of thumb to calculate sliderValue
+        // MARK: TODO  Consider effect of rotation value and x/y position of thumb when calculating sliderValue
          range.lowerBound + (location - buffer*0.5)  / scaling
     }
     /// List of values (not offsets)  for where trackMarks or trackLabels should be placed

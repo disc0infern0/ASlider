@@ -17,10 +17,7 @@ struct Thumb: View {
 
     var body: some View {
 
-        if sliderStyle.sliderIndicator.contains(.thumb),
-           case .regular = sliderStyle.trackMarkStyle
-        {
-            
+        if sliderStyle.sliderIndicator.contains(.thumb) {
             let offset = sliderHelper.sliderLocation(of: sliderValue) - sliderStyle._thumbWidth*0.5
             thumb()
                 .shadow(color: sliderStyle.trackShadowColor, radius: sliderStyle.trackShadowRadius)
@@ -29,7 +26,6 @@ struct Thumb: View {
                 .onChange(of: sliderValueProxy) { sliderValue = sliderValueProxy }
                 .onChange(of: sliderValue, initial: true) { sliderValueProxy = sliderValue }
                 .offset(x: offset)
-            //            .highPriorityGesture(thumbDragGesture())
         }
     }
     ///
@@ -41,9 +37,6 @@ struct Thumb: View {
         sliderValueProxy = newSliderValue  // Not using the proxy triggers an Apple bug; cancelling the repeats
         return KeyPress.Result.handled
     }
-
-
-
 
     @ViewBuilder
     func thumb() -> some View {

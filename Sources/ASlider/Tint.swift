@@ -70,9 +70,7 @@ struct TintBar: View, Animatable {
         set { sliderLocation = newValue }
     }
     var body: some View {
-        if sliderStyle.sliderIndicator.contains(.tintBar),
-           case .regular = sliderStyle.trackMarkStyle
-        {
+        if sliderStyle.sliderIndicator.contains(.tintBar) {
             RoundedRectangle(cornerRadius: height/2)
                 .frame(width: max(width,0), height: max(height,0))
                 .offset(x: startPosition)

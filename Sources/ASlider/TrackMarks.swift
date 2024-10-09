@@ -16,17 +16,19 @@ struct TrackMarks: View {
     @State var activeGradient: LinearGradient = LinearGradient(colors: [.red, .blue], startPoint: .top, endPoint: .bottom)
     @State var inActiveGradient: LinearGradient = LinearGradient(colors: [.primary.opacity(0.5), .secondary.opacity(0.4)], startPoint: .top, endPoint: .bottom)
     var alignment: UnitPoint {
-        if case .dynamic = sliderStyle.trackMarkStyle {
+        if sliderStyle.dynamicTrackMarks != nil {
+//        if case .dynamic = sliderStyle.trackMarkStyle {
             UnitPoint.bottomLeading
         } else { UnitPoint.leading }
     }
 
     var body: some View {
-        var growth: Double {
-            if case .dynamic(_, let growth) = sliderStyle.trackMarkStyle {
-                return growth
-            } else { return 1.0 }
-        }
+//        var growth: Double {
+//            if case .dynamic(_, let growth) = sliderStyle.trackMarkStyle {
+//                return growth
+//            } else { return 1.0 }
+//        }
+        let growth = sliderStyle.dynamicTrackMarks?.growth ?? 1.0
         let markValues = sliderHelper.markValues(from: sliderStyle.trackMarks)
         TrackLayout(
             hpad: max(sliderStyle._thumbWidth, sliderStyle._trackMarkWidth) ,
@@ -49,11 +51,15 @@ struct TrackMarks: View {
     }
 
     func barGradient(for markValue: Double) -> LinearGradient {
-        guard sliderStyle.sliderIndicator.contains(.trackMarks) else {
-            return activeGradient
-        }
-        return shouldHighlight(markValue) ? activeGradient : inActiveGradient
+//        guard sliderStyle.sliderIndicator.contains(.trackMarks) else {
+//            return activeGradient
+//        }
+//        return shouldHighlight(markValue) ? activeGradient : inActiveGradient
+
+        sliderStyle.dynamicTrackMarks != nil ? activeGradient : inActiveGradient
+
     }
+
     func shouldHighlight(_ markValue: Double) -> Bool {
         var rangeStart: Double
         var rangeEnd: Double
@@ -71,9 +77,12 @@ struct TrackMarks: View {
 
     func barHeight(for markValue: Double) -> Double {
 
-        guard sliderHelper.isDragging, shouldHighlight(markValue), case .dynamic(let percent,let growth) = sliderStyle.trackMarkStyle else {
+        guard sliderHelper.isDragging, shouldHighlight(markValue), let (percent,growth) = sliderStyle.dynamicTrackMarks else {
             return sliderStyle._trackMarkHeight
         }
+//        guard sliderHelper.isDragging, shouldHighlight(markValue), case .dynamic(let percent,let growth) = sliderStyle.trackMarkStyle else {
+//            return sliderStyle._trackMarkHeight
+//        }
         let normalisedXValue = getNormalisedXvalue(for: markValue, with: percent)
         guard normalisedXValue >= 0 else {
             return sliderStyle._trackMarkHeight
@@ -110,8 +119,7 @@ extension ClosedRange<Double> {
         TrackMarks(sliderValue: 18)
             .environment(SliderHelper(range: 0...30, isInt: false))
             .sliderStyle(.orangey) { style in
-                style.sliderIndicator = .trackMarks
-                style.trackMarkStyle = .dynamic(percent: 0.2, growth: 3.0)
+                style.sliderIndicator = [.trackMarks(percent: 0.2, growth: 3.0)]
                 style.tintCentredOn = .value(10)
                 style.trackMarks = .every(0.4)
                 style.trackMarkHeight = 15

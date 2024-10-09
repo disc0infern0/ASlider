@@ -27,13 +27,9 @@ struct Track: View {
                     )
             }
             .task {
-                color = if case .dynamic = sliderStyle.trackMarkStyle {
-                    Color.clear
-                } else {
-                    sliderStyle.trackColor
-                }
+                color = (sliderStyle.dynamicTrackMarks != nil) ? Color.clear : sliderStyle.trackColor
                 if sliderStyle.sliderIndicator.contains(.thumb) {
-                    clickHeight = sliderStyle._thumbWidth
+                    clickHeight = sliderStyle.thumbHeight
                 }
                 else {
                     clickHeight = sliderStyle._trackMarkHeight

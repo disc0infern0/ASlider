@@ -25,9 +25,9 @@ public struct SliderStyle: Equatable, Sendable {
     /// For dynamic styles;
     ///     percent: governs  the width of the track that expands upwards
     ///     growth:  multiplier dicating the maximum increase in height of the bar mark
-    public enum TrackMarkStyle: Equatable, Sendable {
-        case regular, dynamic(percent: Double, growth: Double)
-    }
+//    public enum TrackMarkStyle: Equatable, Sendable {
+//        case regular, dynamic(percent: Double, growth: Double)
+//    }
     public enum Marks: Equatable, Sendable {
         case every(Double), auto
         public static let none = Self.every(0)
@@ -63,31 +63,47 @@ public struct SliderStyle: Equatable, Sendable {
         @MainActor public static var zero = Self.value(0)
     }
 
-    public struct SliderIndicator: OptionSet, Sendable {
-        public let rawValue: Int
-        public init(rawValue: Int) {
-            print("This initializer is not supported: \(rawValue)")
-            self.rawValue = 0
-        }
-        private init(raw: Int) {
-            self.rawValue = raw
-        }
-
-        public static let thumb = SliderIndicator(raw: 1 << 0)
-        public static let tintBar = SliderIndicator(raw: 1 << 1)
-        public static let trackMarks = SliderIndicator(raw: 1 << 2)
-        public static let all: SliderIndicator = [.thumb, .tintBar, .trackMarks]
+    public enum SliderIndicator : Sendable, Equatable {
+        case thumb, tintBar, trackMarks(percent: Double, growth: Double)
     }
+//    public struct SliderIndicator: OptionSet, Sendable {
+//        public let rawValue: Int
+//        public init(rawValue: Int) {
+//            print("This initializer is not supported: \(rawValue)")
+//            self.rawValue = 0
+//        }
+//        private init(raw: Int) {
+//            self.rawValue = raw
+//        }
+//
+//        public static let thumb = SliderIndicator(raw: 1 << 0)
+//        public static let tintBar = SliderIndicator(raw: 1 << 1)
+//        public static let trackMarks = SliderIndicator(raw: 1 << 2)
+//        public static let all: SliderIndicator = [.thumb, .tintBar, .trackMarks]
+//    }
 
-    public var sliderIndicator: SliderIndicator = [.thumb,.tintBar]
+//    public var sliderIndicator: SliderIndicator = [.thumb,.tintBar]
+    public var sliderIndicator: [SliderIndicator] = [.thumb, .tintBar]
+    public var dynamicTrackMarks: (percent: Double,growth: Double)? {
+        for indicator in sliderIndicator {
+            if case .trackMarks(let percent, let growth) = indicator {
+                return (percent, growth)
+            }
+        }
+        return nil
+    }
     public var trackHeight: Double = 4
     public var trackColor: Color = .primary.opacity(0.5)
     public var trackMarks: Marks = .auto
+    /// Allow modification of the trackMarks from the step: parameter of slider.init
+    internal mutating func setTrackMarks(_ m: Marks) {
+        trackMarks = m
+    }
     public var trackMarkWidth: Double?
     public var trackMarkHeight: Double?
     public var trackMarkActiveColor: [Color] = [.primary]
     public var trackMarkInActiveColor: [Color] = [.primary.opacity(0.5), .secondary.opacity(0.4)]
-    public var trackMarkStyle: TrackMarkStyle = .regular
+//    public var trackMarkStyle: TrackMarkStyle = .regular
 
     internal var _trackMarkWidth: Double {
         if let width = trackMarkWidth {width} else { trackHeight * 0.4}
