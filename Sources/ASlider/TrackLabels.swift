@@ -16,7 +16,7 @@ struct TrackLabels<LabelMarkContent: View>: View {
         let markValues = sliderHelper.markValues(
             from: sliderStyle.labelMarks
         )
-        TrackLayout(hpad: sliderStyle._thumbWidth) {
+        TrackLayout(hpad: sliderStyle.thumbWidth) {
             ForEach( markValues, id: \.self ) { mark in
                 labelMark(mark)
             }

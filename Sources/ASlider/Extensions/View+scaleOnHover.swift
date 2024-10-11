@@ -30,6 +30,7 @@ struct ScaleOnHover: ViewModifier  {
 }
 
 extension View {
+    @MainActor
     func scaleOnHover(_ scale: Double = 1.2) -> some View {
         modifier(ScaleOnHover(activeScale: scale))
     }

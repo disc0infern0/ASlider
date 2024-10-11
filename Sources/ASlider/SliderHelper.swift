@@ -52,9 +52,11 @@ final class SliderHelper {
         buffer*0.5 + (sliderValue - range.lowerBound) * scaling
     }
 
-    func getSliderValue(of location: Double) -> Double {
-        // MARK: TODO  Consider effect of rotation value and x/y position of thumb when calculating sliderValue
-         range.lowerBound + (location - buffer*0.5)  / scaling
+    /// Get a new slider value from a location clicked on the track
+    /// No need to check if resulting sliderValue is in bounds, since it must be - as it is limited by the track length.
+    func getSliderValue(of x: Double) -> Double {
+        let newValue =  range.lowerBound + ((x - buffer*0.5)  / scaling)
+        return newValue
     }
     /// List of values (not offsets)  for where trackMarks or trackLabels should be placed
     func markValues(from trackMarks: SliderStyle.Marks) -> [Double] {
@@ -63,7 +65,7 @@ final class SliderHelper {
             case .every(let interval): interval
             case .auto: (range.upperBound - range.lowerBound) / 9.0
         }
-        guard interval != 0 else { return marks }
+        guard interval != 0 else { return [] }
         var next = range.lowerBound
         while next <= range.upperBound {
             marks.append(next)
@@ -90,7 +92,7 @@ final class SliderHelper {
     func trackMarkStep(of trackMarks: SliderStyle.Marks) -> Double {
         var increment: Double
         if case .every(let step) = trackMarks, step > 0 {
-            /// a specific step has been asked for, so use it (even if it may be zero for integers)
+            /// a specific step has been asked for, so use it ( it may be zero for integers)
             increment = step
         } else {
             increment = (range.upperBound - range.lowerBound)/20
@@ -108,3 +110,4 @@ final class SliderHelper {
     }
 
 }
+

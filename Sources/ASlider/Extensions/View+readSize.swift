@@ -7,8 +7,8 @@
 import SwiftUI
 
 extension View {
+    @MainActor
     func readSize(_ action: @escaping (CGSize)->Void) -> some View {
-        self
-            .onGeometryChange(for: CGSize.self, of: {$0.size}, action: action)
+        onGeometryChange(for: CGSize.self, of: {$0.size}, action: action)
     }
 }

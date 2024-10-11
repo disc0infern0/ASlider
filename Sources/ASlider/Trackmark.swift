@@ -15,7 +15,7 @@ struct Trackmark: View {
         Capsule()
             .fill(gradient)
             .frame(
-                width: sliderStyle._trackMarkWidth,
+                width: sliderStyle.i_trackMarkWidth,
                 height: height
             )
             .animation(.easeInOut, value: height)

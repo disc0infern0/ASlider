@@ -1,6 +1,6 @@
 //
-//  ASlider.swift
-//  bindingToClass
+//  NewSlider.swift
+//  ASlider
 //
 //  Created by Andrew on 10/08/2024.
 //
@@ -15,16 +15,16 @@ import OSLog
 /// There is an array of predefined styles to choose from, including
 ///  .classic which emulates the Apple slider,
 ///  .newClassic which updates the Apple slider with a bounce animation to the thumb and transparent selection
-
 public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     @Binding var sliderValue: Double
+    @State var lastSliderValue: Double
     let range: ClosedRange<Double>
     var label: () -> LabelContent
     var labelMark: (_:Double) -> LabelMarkContent
     let isIntValue: Bool  // record whether we are called with an integer binding or not
     @Environment(\.sliderStyle) var sliderStyle
-    var newSliderStyle: SliderStyle = .classic
     @State var sliderHelper: SliderHelper
+    let step: Double?
 
     public init(
         value: Binding<Double>,
@@ -78,10 +78,8 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
         self.label = label
         self.labelMark = labelMark
         _sliderHelper = State(wrappedValue: SliderHelper( range: range, isInt: isIntValue))
-        newSliderStyle = sliderStyle
-        if let step {
-            newSliderStyle.setTrackMarks(.every(step))
-        }
+        self.step = step
+        lastSliderValue = value.wrappedValue
     }
     @State private var alignment: Alignment = .leading
     public var body: some View {
@@ -92,34 +90,40 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                 ZStack(alignment: alignment) {
                     Track()
                     TrackMarks(sliderValue: sliderValue)
-                    Tint(sliderValue: sliderValue)
+                    Tint(sliderValue: sliderValue, lastSliderValue: lastSliderValue)
                         .allowsHitTesting(false)
                     Thumb( sliderValue: $sliderValue)
-//                        .allowsHitTesting(false) // allow for click on thumb to animate
+                        .allowsHitTesting(false) // allow for click on thumb to animate
                 }
-                .onTapGesture {
-                    sliderValue = sliderHelper.getSliderValue(of: $0.x)
+                .onTapGesture { location in
+                    sliderValue = sliderHelper.getSliderValue(of: location.x)
                 }
                 .highPriorityGesture(dragGesture() )
                 TrackLabels(labelMark: labelMark)
             }
         }
+        .animation(sliderStyle.sliderAnimation, value: sliderValue)
+        .animation(sliderStyle.sliderAnimation, value: lastSliderValue)
         .sliderAccessibility(sliderValue: $sliderValue)
         .environment(sliderHelper)
-        .environment(\.sliderStyle, newSliderStyle)
         .task {
-//            if case .dynamic = sliderStyle.trackMarkStyle {
-            if sliderStyle.dynamicTrackMarks != nil {
+            if sliderStyle.sliderIndicator.containsTrackMarks  {
                 alignment = .bottomLeading
             }
             if sliderStyle.sliderIndicator.isEmpty  {
-//                print("!!Warning!! A valid slider indicator has not been set")
-                let logger = Logger(
-                    subsystem: Bundle.main.bundleIdentifier ?? "New Slider",
-                    category: "Initialization"
-                )
-                logger.log(level: .info, "A valid slider indicator has not been set")
+                print("!!Warning!! A valid slider indicator has not been set")
+                let logger = Logger( subsystem: Bundle.main.bundleIdentifier ?? "New Slider",
+                                     category: "Initialization" )
+                let message = "A valid slider indicator has not been set"
+                logger.notice("\(message, privacy: .public)")
             }
+            if let step {
+                sliderStyle.setTrackMarks(.every(step))
+                sliderStyle.sliderIndicator = [.thumb]
+                sliderStyle.thumbSymbol = .capsule
+                sliderStyle.thumbWidth = 8
+            }
+            if !sliderStyle.sliderIndicator.contains(.thumb) { sliderStyle.thumbWidth = 0 }
         }
     }
 
@@ -127,11 +131,38 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     func dragGesture() -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { gesture in
-                if !sliderHelper.isDragging { sliderHelper.dragStarted.toggle() }
+                if !sliderHelper.isDragging {
+                    /// Drag started
+                    sliderHelper.dragStarted.toggle()
+                }
                 sliderHelper.isDragging = true
                 let new = sliderHelper.getSliderValue(of: gesture.location.x )
                 if sliderHelper.isValidSliderValue(new) { sliderValue = new }
             }
-            .onEnded { _ in sliderHelper.isDragging = false }
+            .onEnded { _ in
+                sliderHelper.isDragging = false
+                lastSliderValue = sliderValue
+            }
     }
 }
+
+#Preview {
+    @Previewable @State var num: Double = 2.0
+    let range: ClosedRange<Double> = -10 ... 10
+    VStack {
+        Text("classic")
+        NewSlider(value: $num, in: range)
+            .sliderStyle(.classic) { s in
+                s.sliderIndicator = [.thumb, .tintBar]
+                s.trackMarks = .every(1)
+                s.trackColor = .red
+                s.labelMarks = .every(2)
+                s.tintCentredOn = .lastValue
+            }
+        Slider(value: $num, in: range, step: 1)
+    }
+
+    .frame(width: 400, height: 100)
+
+}
+

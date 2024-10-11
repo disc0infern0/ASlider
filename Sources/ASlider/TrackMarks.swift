@@ -1,11 +1,9 @@
 //
-//  Tint 2.swift
-//  bindingToClass
+//  TrackMarks.swift
+//  ASlider
 //
 //  Created by Andrew on 9/2/24.
 //
-
-
 
 import SwiftUI
 
@@ -13,56 +11,36 @@ struct TrackMarks: View {
     @Environment(\.sliderStyle) var sliderStyle
     @Environment(SliderHelper.self) var sliderHelper
     let sliderValue: Double
-    @State var activeGradient: LinearGradient = LinearGradient(colors: [.red, .blue], startPoint: .top, endPoint: .bottom)
-    @State var inActiveGradient: LinearGradient = LinearGradient(colors: [.primary.opacity(0.5), .secondary.opacity(0.4)], startPoint: .top, endPoint: .bottom)
     var alignment: UnitPoint {
         if sliderStyle.dynamicTrackMarks != nil {
-//        if case .dynamic = sliderStyle.trackMarkStyle {
             UnitPoint.bottomLeading
         } else { UnitPoint.leading }
     }
 
     var body: some View {
-//        var growth: Double {
-//            if case .dynamic(_, let growth) = sliderStyle.trackMarkStyle {
-//                return growth
-//            } else { return 1.0 }
-//        }
+        let activeGradient = LinearGradient(colors: sliderStyle.trackMarkActiveColor,
+                                            startPoint: .top, endPoint: .bottom)
+        let inActiveGradient = LinearGradient(colors: sliderStyle.trackMarkInActiveColor,
+                                              startPoint: .top, endPoint: .bottom)
         let growth = sliderStyle.dynamicTrackMarks?.growth ?? 1.0
         let markValues = sliderHelper.markValues(from: sliderStyle.trackMarks)
         TrackLayout(
-            hpad: max(sliderStyle._thumbWidth, sliderStyle._trackMarkWidth) ,
-            vpad: sliderStyle._trackMarkHeight * (growth - 1),
+            hpad: max(sliderStyle.thumbWidth, sliderStyle.i_trackMarkWidth) ,
+            vpad: sliderStyle.i_trackMarkHeight * (growth - 1),
             alignment: alignment
         ) {
             ForEach(markValues, id: \.self) { markValue in
-                let gradient = barGradient(for: markValue)
+                let gradient = shouldHighlight(markValue) ? activeGradient : inActiveGradient
                 let height = barHeight(for: markValue)
                 Trackmark(gradient: gradient, height: height)
             }
         }
-        .task {
-            activeGradient = LinearGradient(colors: sliderStyle.trackMarkActiveColor,
-                                            startPoint: .top, endPoint: .bottom)
-            inActiveGradient = LinearGradient(colors: sliderStyle.trackMarkInActiveColor,
-                                              startPoint: .top, endPoint: .bottom)
-
-        }
-    }
-
-    func barGradient(for markValue: Double) -> LinearGradient {
-//        guard sliderStyle.sliderIndicator.contains(.trackMarks) else {
-//            return activeGradient
-//        }
-//        return shouldHighlight(markValue) ? activeGradient : inActiveGradient
-
-        sliderStyle.dynamicTrackMarks != nil ? activeGradient : inActiveGradient
-
     }
 
     func shouldHighlight(_ markValue: Double) -> Bool {
         var rangeStart: Double
         var rangeEnd: Double
+        guard sliderStyle.sliderIndicator.containsTrackMarks else { return false}
         switch sliderStyle.tintCentredOn {
             case .lowest:
                 rangeStart = sliderHelper.range.lowerBound
@@ -77,21 +55,20 @@ struct TrackMarks: View {
 
     func barHeight(for markValue: Double) -> Double {
 
-        guard sliderHelper.isDragging, shouldHighlight(markValue), let (percent,growth) = sliderStyle.dynamicTrackMarks else {
-            return sliderStyle._trackMarkHeight
+        guard sliderHelper.isDragging,
+              let (percent,growth) = sliderStyle.dynamicTrackMarks, shouldHighlight(markValue)
+        else {
+            return sliderStyle.i_trackMarkHeight
         }
-//        guard sliderHelper.isDragging, shouldHighlight(markValue), case .dynamic(let percent,let growth) = sliderStyle.trackMarkStyle else {
-//            return sliderStyle._trackMarkHeight
-//        }
         let normalisedXValue = getNormalisedXvalue(for: markValue, with: percent)
         guard normalisedXValue >= 0 else {
-            return sliderStyle._trackMarkHeight
+            return sliderStyle.i_trackMarkHeight
         }
         /// Follow formula y = a.x^3 +c
         ///  when x=1, y= growth*trackheight,  when x = 0, y = trackHeight
-        let a = sliderStyle._trackMarkHeight * (growth - 1 )
+        let a = sliderStyle.i_trackMarkHeight * (growth - 1 )
         let x2 = pow(normalisedXValue,3)
-        let height = a * x2 + sliderStyle._trackMarkHeight
+        let height = a * x2 + sliderStyle.i_trackMarkHeight
         return height
     }
 
@@ -105,9 +82,7 @@ struct TrackMarks: View {
     }
 }
 extension ClosedRange<Double> {
-    var span: Double {
-        self.upperBound - self.lowerBound
-    }
+    var span: Double { upperBound - lowerBound }
 }
 #Preview {
 
@@ -118,8 +93,8 @@ extension ClosedRange<Double> {
             .border(.red)
         TrackMarks(sliderValue: 18)
             .environment(SliderHelper(range: 0...30, isInt: false))
-            .sliderStyle(.orangey) { style in
-                style.sliderIndicator = [.trackMarks(percent: 0.2, growth: 3.0)]
+            .sliderStyle(.classic) { style in
+                style.sliderIndicator = [.trackMarks(percent: 0.2, growth: 2.0)]
                 style.tintCentredOn = .value(10)
                 style.trackMarks = .every(0.4)
                 style.trackMarkHeight = 15
@@ -132,3 +107,4 @@ extension ClosedRange<Double> {
     .border(.green)
     .padding(10)
 }
+

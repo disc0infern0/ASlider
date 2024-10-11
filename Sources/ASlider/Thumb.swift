@@ -18,10 +18,13 @@ struct Thumb: View {
     var body: some View {
 
         if sliderStyle.sliderIndicator.contains(.thumb) {
-            let offset = sliderHelper.sliderLocation(of: sliderValue) - sliderStyle._thumbWidth*0.5
+            let offset = sliderHelper.sliderLocation(of: sliderValue) - sliderStyle.thumbWidth*0.5
             thumb()
                 .shadow(color: sliderStyle.trackShadowColor, radius: sliderStyle.trackShadowRadius)
-                .focusable()  //(true, interactions: .activate)
+                .focusable(
+                    sliderHelper.isDragging ? false : true,
+                    interactions: .activate
+                )
                 .onKeyPress(keys: [.leftArrow, .rightArrow], action: arrowKeyPress)
                 .onChange(of: sliderValueProxy) { sliderValue = sliderValueProxy }
                 .onChange(of: sliderValue, initial: true) { sliderValueProxy = sliderValue }
@@ -81,3 +84,4 @@ struct Thumb: View {
             .shapeEffect( sliderStyle.thumbShapeEffect, options: .effectRepeat(1), value: sliderHelper.dragStarted )
     }
 }
+

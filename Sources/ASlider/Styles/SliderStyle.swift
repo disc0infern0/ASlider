@@ -1,11 +1,15 @@
 //
-//  Styling.swift
-//  MySlider
+//  SliderStyle.swift
+//  NewSlider
 //
 //  Created by Andrew on 08/07/2024.
 //
 
 import SwiftUI
+
+public extension EnvironmentValues {
+    @Entry var sliderStyle: SliderStyle = SliderStyle()
+}
 
 /// Control the style of a slider through various configurable settings,  such
 /// as trackHeight, thumbWidth, thumbSymbol
@@ -13,21 +17,16 @@ import SwiftUI
 /// .classic - similar to SwiftUI slider
 /// .newClassic - similar to above, but with additional thumb bounce and tint
 /// .orangey - bigger and bolder and ... more orangey!
-///
-public extension EnvironmentValues {
-    @Entry var sliderStyle: SliderStyle = SliderStyle()
-}
-
-
-public struct SliderStyle: Equatable, Sendable {
+@Observable
+public final class SliderStyle {
     /// regular trackmarkstyles have constant sizing.
     /// dynamic trackmarkstyles have the bar marks increase in size with the dragging event
     /// For dynamic styles;
     ///     percent: governs  the width of the track that expands upwards
     ///     growth:  multiplier dicating the maximum increase in height of the bar mark
-//    public enum TrackMarkStyle: Equatable, Sendable {
-//        case regular, dynamic(percent: Double, growth: Double)
-//    }
+    ///
+    public init() { }
+
     public enum Marks: Equatable, Sendable {
         case every(Double), auto
         public static let none = Self.every(0)
@@ -63,27 +62,12 @@ public struct SliderStyle: Equatable, Sendable {
         @MainActor public static var zero = Self.value(0)
     }
 
-    public enum SliderIndicator : Sendable, Equatable {
+    public enum SliderIndicator : Sendable, Equatable, Hashable {
         case thumb, tintBar, trackMarks(percent: Double, growth: Double)
     }
-//    public struct SliderIndicator: OptionSet, Sendable {
-//        public let rawValue: Int
-//        public init(rawValue: Int) {
-//            print("This initializer is not supported: \(rawValue)")
-//            self.rawValue = 0
-//        }
-//        private init(raw: Int) {
-//            self.rawValue = raw
-//        }
-//
-//        public static let thumb = SliderIndicator(raw: 1 << 0)
-//        public static let tintBar = SliderIndicator(raw: 1 << 1)
-//        public static let trackMarks = SliderIndicator(raw: 1 << 2)
-//        public static let all: SliderIndicator = [.thumb, .tintBar, .trackMarks]
-//    }
 
-//    public var sliderIndicator: SliderIndicator = [.thumb,.tintBar]
-    public var sliderIndicator: [SliderIndicator] = [.thumb, .tintBar]
+    public var sliderAnimation: Animation = .smooth(duration: 0.2)
+    public var sliderIndicator: Set<SliderIndicator> = [.thumb, .tintBar]
     public var dynamicTrackMarks: (percent: Double,growth: Double)? {
         for indicator in sliderIndicator {
             if case .trackMarks(let percent, let growth) = indicator {
@@ -94,29 +78,26 @@ public struct SliderStyle: Equatable, Sendable {
     }
     public var trackHeight: Double = 4
     public var trackColor: Color = .primary.opacity(0.5)
-    public var trackMarks: Marks = .auto
-    /// Allow modification of the trackMarks from the step: parameter of slider.init
-    internal mutating func setTrackMarks(_ m: Marks) {
+    public var trackMarks: Marks = .none
+    /// Allow modification of the trackMarks from the step: parameter of NewSlider.task (aka onAppear)
+    internal func setTrackMarks(_ m: Marks) {
         trackMarks = m
     }
     public var trackMarkWidth: Double?
     public var trackMarkHeight: Double?
-    public var trackMarkActiveColor: [Color] = [.primary]
-    public var trackMarkInActiveColor: [Color] = [.primary.opacity(0.5), .secondary.opacity(0.4)]
-//    public var trackMarkStyle: TrackMarkStyle = .regular
+    public var trackMarkActiveColor: [Color] = [.secondary]
+    public var trackMarkInActiveColor: [Color] = [Color(nsColor: .tertiaryLabelColor)]
 
-    internal var _trackMarkWidth: Double {
+    internal var i_trackMarkWidth: Double {
         if let width = trackMarkWidth {width} else { trackHeight * 0.4}
     }
-    internal var _trackMarkHeight: Double {
+    internal var i_trackMarkHeight: Double {
         if let height = trackMarkHeight  { height } else {
-            max(_thumbWidth, trackHeight ) }
+            max(thumbHeight/2.5, trackHeight ) }
     }
 
     public var labelMarks: Marks = .none
 
-    public var zeroBased = true
-//    var showTrackTint: Bool = true
     public var tintCentredOn: CentredOn = .lowest
     public var trackTintColor: Color = .blue
     public var trackShadow: Shadow = .none
@@ -136,10 +117,25 @@ public struct SliderStyle: Equatable, Sendable {
     public var thumbWidth: Double = 21
     public var thumbHeight: Double = 21
     public var thumbShapeEffect: ShapeEffects = .bounce
-
-    var _thumbWidth: Double {
-        if sliderIndicator.contains(.thumb) { thumbWidth } else { 0 }
-    }
 }
 
+
+
+
+
+
+extension Set where Element == SliderStyle.SliderIndicator {
+    var containsTrackMarks: Bool {
+        for f in self {
+            if case .trackMarks = f { return true}
+        }
+        return false
+    }
+    var containsTintBar: Bool {
+        for f in self {
+            if case .tintBar = f { return true }
+        }
+        return false
+    }
+}
 

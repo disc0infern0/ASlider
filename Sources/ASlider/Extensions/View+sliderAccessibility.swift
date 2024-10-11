@@ -44,8 +44,8 @@ struct SliderAccessibility: ViewModifier  {
   
 }
 
-
 extension View {
+    @MainActor
     func sliderAccessibility(sliderValue: Binding<Double>) -> some View {
         self.modifier(SliderAccessibility(sliderValue: sliderValue))
     }

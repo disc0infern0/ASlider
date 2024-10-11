@@ -7,7 +7,7 @@
 
 
 
-import SwiftUICore
+import SwiftUI
 
 /// Recreates the symbol bouncey effect  when an equatable toggle value changes;-
 ///    .symbolEffect(.bounce, options: .repeat(1), value: helper.dragStarted)

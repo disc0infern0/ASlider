@@ -26,7 +26,8 @@ Not quite *all* of the Slider initialisers are currently supported. If you speci
 ## **NewSlider vs Slider**
 
 - **Bound Ints**     
-The slider value can now be a bound Int! Huzzah! This was in fact the original reason for this package. (Scope creep is real) ( and yes, I know you can create a computed variable of an int that produces a Bound<Double> for the slider, but ... that code is ugly)
+The slider value can now be a bound Int! Huzzah! This was in fact the original reason for this package. [Scope creep](https://en.wikipedia.org/wiki/Scope_creep)  is real.  
+( Yes, I know you can create a computed variable of an `Int` that produces a `Bound<Double>` for the slider, but ... [that code](https://stackoverflow.com/questions/65736518/how-do-i-create-a-slider-in-swiftui-bound-to-an-int-type-property) is ugly)
 - **Symbols**   
 You can replace the thumb shape altogether with a symbol of your choice. 
 ( If you always wanted a Thor style lighning indicator on your slider, it now comes preconfigured, just select `thumbSymbol = .bolt` in your styling closure )
@@ -61,8 +62,35 @@ There is probably a square law of proportionalilty that dicates that explains wh
 After googling 'law of proportionality', Article 5(4) of the Treaty on European Union absolutely drives this point home like a sperm whale would if it fell on you from 10,000 feet. I am not going to attempt an explanation of Article 5(4), but if I did, it would hurt. Alot. I leave it you, dear reader, to determine if that law can be broken.   
 </details>
 
-Here the customisation is done via the environment, similarly to how Apple does it for other controls.   
-
+The initialiser should look very familiar to anyone who currently uses Slider:
+```swift
+NewSlider<LabelContent: View, LabelMarkContent: View>: View {
+   init(   
+   _ value: Binding<T>,  // T is Double or Int. (This is an abbreviated init, as the actual initialiser is not generic)
+   in: ClosedRange<Double>,   
+   step: Double? = nil,   
+   label: @escaping () -> LabelContent = { EmptyView() },
+   labelMark: @escaping (_:Double)->LabelMarkContent = { d in
+            Text("\(d.formatted(.number.precision(.fractionLength(1))))")
+                .font(.caption2)
+        })
+```
+In use, that becomes more familiar:
+```swift
+@State var myDbl: Double = 2
+NewSlider($myDbl, in: 0...10) 
+```
+or even
+```swift 
+@State var myDbl: Double = 2
+NewSlider($myDbl, in: 0...10) 
+{
+   Text(myDbl)
+   .contentTransition(.numericText(value: myDbl))
+}
+```
+For most uses of Slider, the init should be a transparent change. It accepts a closure to display the numeric value to the left of the slider, similarly to the Apple Slider, but it also accepts a further closure to display label values underneath the slider.   
+The styling/appearance of the slider is done via the environment, similarly to how Apple does it for other controls.   
 
 
 ### **Styles**
@@ -102,4 +130,6 @@ Using the above closure method for modifying a theme gives you the benefit of fi
 # Appendix
 
 I still remain hopeful that Apple will update the classic SwiftUI Slider to be a little more stylable, as they have done with other controls, but for now, this might suffice.
+
+
 
