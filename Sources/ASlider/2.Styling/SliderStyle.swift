@@ -47,6 +47,8 @@ public final class SliderStyle {
             }
         }
     }
+    /*
+     //MARK: currently unused
     public enum Rotation: Equatable, Sendable {
         static let conversionFactor = Double.pi / 180
         case radians(Double), degrees(Double)
@@ -57,6 +59,7 @@ public final class SliderStyle {
             }
         }
     }
+     */
     public enum CentredOn: Equatable, Sendable {
         case value(Double), lastValue, lowest
         @MainActor public static var zero = Self.value(0)
@@ -118,24 +121,3 @@ public final class SliderStyle {
     public var thumbHeight: Double = 21
     public var thumbShapeEffect: ShapeEffects = .bounce
 }
-
-
-
-
-
-
-extension Set where Element == SliderStyle.SliderIndicator {
-    var containsTrackMarks: Bool {
-        for f in self {
-            if case .trackMarks = f { return true}
-        }
-        return false
-    }
-    var containsTintBar: Bool {
-        for f in self {
-            if case .tintBar = f { return true }
-        }
-        return false
-    }
-}
-

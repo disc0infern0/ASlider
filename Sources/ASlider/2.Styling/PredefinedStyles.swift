@@ -10,7 +10,7 @@ extension SliderStyle {
     @MainActor
     public static let classic = {
         var base = SliderStyle()
-        base.trackColor =   Color("classicThumb", bundle: .module)
+        base.trackColor =   Color("classicTrack", bundle: .module)
         base.trackMarks =  .none
         base.trackMarkWidth =  2
         base.labelMarks =  .none
@@ -24,6 +24,17 @@ extension SliderStyle {
         return base
     }()
 
+    @MainActor
+    public static let dynamic = {
+        var style = SliderStyle()
+        style.sliderIndicator = [.trackMarks(percent: 0.2, growth: 2.0)]
+        style.tintCentredOn = .lowest
+        style.trackMarks = .every(0.4)
+        style.trackMarkHeight = 15
+        style.trackMarkWidth = 4
+        style.trackMarkActiveColor = [.blue, .green, .yellow]
+        return style
+    }()
     @MainActor
     public static let newClassic = {
         var base = SliderStyle()

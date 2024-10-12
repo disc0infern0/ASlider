@@ -5,19 +5,14 @@ import PackageDescription
 
 let package = Package(
     name: "ASlider",
-    platforms: [
-        .macOS(.v15), .iOS(.v18), .tvOS(.v18)
-    ],
+    platforms: [ .macOS(.v14), .iOS(.v17), .tvOS(.v17) ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "ASlider",
-            targets: ["ASlider"]),
+        .library( name: "ASlider", targets: ["ASlider"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "ASlider"),
+        .target(name: "ASlider"),
     ]
 )

@@ -111,11 +111,11 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                 alignment = .bottomLeading
             }
             if sliderStyle.sliderIndicator.isEmpty  {
-                print("!!Warning!! A valid slider indicator has not been set")
-                let logger = Logger( subsystem: Bundle.main.bundleIdentifier ?? "New Slider",
-                                     category: "Initialization" )
-                let message = "A valid slider indicator has not been set"
-                logger.notice("\(message, privacy: .public)")
+                let logger = Logger(
+                    subsystem: Bundle.main.bundleIdentifier ?? "New Slider",
+                    category: "Init")
+                let message = "A valid slider indicator was not set."
+                logger.warning("\(message, privacy: .public)")
             }
             if let step {
                 sliderStyle.setTrackMarks(.every(step))
@@ -123,7 +123,9 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                 sliderStyle.thumbSymbol = .capsule
                 sliderStyle.thumbWidth = 8
             }
-            if !sliderStyle.sliderIndicator.contains(.thumb) { sliderStyle.thumbWidth = 0 }
+            if !sliderStyle.sliderIndicator.contains(.thumb) {
+                sliderStyle.thumbWidth = 0
+            }
         }
     }
 
@@ -146,23 +148,44 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     }
 }
 
-#Preview {
+#Preview("classic") {
     @Previewable @State var num: Double = 2.0
     let range: ClosedRange<Double> = -10 ... 10
     VStack {
         Text("classic")
         NewSlider(value: $num, in: range)
             .sliderStyle(.classic) { s in
-                s.sliderIndicator = [.thumb, .tintBar]
-                s.trackMarks = .every(1)
-                s.trackColor = .red
                 s.labelMarks = .every(2)
+                s.tintCentredOn = .zero
+                s.sliderIndicator = []
+            }
+        Slider(value: $num, in: range)
+    }
+    .frame(width: 400, height: 100)
+}
+
+#Preview("last value") {
+    @Previewable @State var num: Double = 2.0
+    let range: ClosedRange<Double> = -10 ... 10
+    VStack {
+        Text("classic")
+        NewSlider(value: $num, in: range)
+            .sliderStyle(.classic) { s in
                 s.tintCentredOn = .lastValue
             }
-        Slider(value: $num, in: range, step: 1)
+        Slider(value: $num, in: range)
+    }
+    .frame(width: 400, height: 100)
+}
+#Preview("Dynamic") {
+    @Previewable @State var num: Double = 2.0
+    let range: ClosedRange<Double> = 0 ... 20
+    VStack {
+        Text("Dynamic")
+        NewSlider(value: $num, in: range)
+            .sliderStyle(.dynamic)
     }
 
     .frame(width: 400, height: 100)
 
 }
-
