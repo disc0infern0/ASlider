@@ -14,7 +14,7 @@ struct Tint: View {
     @Environment(SliderHelper.self) var sliderHelper
     var anchor:  Double {
         switch(sliderStyle.tintCentredOn) {
-            case .lowest: sliderStyle.i_trackMarkWidth/2
+            case .lowest: 0
             case .value(let fixedPoint):
                 sliderHelper.sliderLocation(of: fixedPoint)
             case .lastValue:
