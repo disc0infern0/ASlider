@@ -53,9 +53,10 @@ final class SliderHelper {
     }
 
     /// Get a new slider value from a location clicked on the track
-    /// No need to check if resulting sliderValue is in bounds, since it must be - as it is limited by the track length.
     func getSliderValue(of x: Double) -> Double {
         let newValue =  range.lowerBound + ((x - buffer*0.5)  / scaling)
+        if newValue < range.lowerBound { return range.lowerBound }
+        if newValue > range.upperBound { return range.upperBound }
         return newValue
     }
     /// List of values (not offsets)  for where trackMarks or trackLabels should be placed
