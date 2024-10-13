@@ -14,7 +14,7 @@ struct Tint: View {
     @Environment(SliderHelper.self) var sliderHelper
     var anchor:  Double {
         switch(sliderStyle.tintCentredOn) {
-            case .lowest: 0
+            case .lowest: sliderStyle.i_trackMarkWidth/2
             case .value(let fixedPoint):
                 sliderHelper.sliderLocation(of: fixedPoint)
             case .lastValue:
@@ -22,16 +22,17 @@ struct Tint: View {
         }
     }
 
+    /// A capsule overlaid on top of the track start point  would destroy the nice rounded edge of the track
+    var showTintBarStart: Bool {
+        if case sliderStyle.tintCentredOn = .lowest { false } else { true }
+    }
     var body: some View {
+
         if sliderStyle.sliderIndicator.containsTintBar {
             ZStack(alignment: .leading) {
-                Capsule()
-                    .frame(
-                        width: sliderStyle.i_trackMarkWidth,
-                        height: sliderStyle.i_trackMarkHeight
-                    )
-                    .offset(x: anchor - sliderStyle.i_trackMarkWidth/2)
-                    .foregroundStyle(sliderStyle.trackTintColor)
+                if showTintBarStart {
+                    TintBarStart
+                }
                 TintBar(
                     sliderLocation: sliderHelper.sliderLocation(of: sliderValue),
                     fixedPosition: anchor,
@@ -45,6 +46,15 @@ struct Tint: View {
             }
         }
     }
+    var TintBarStart: some View {
+        Capsule()
+            .frame(
+                width: sliderStyle.i_trackMarkWidth,
+                height: sliderStyle.i_trackMarkHeight
+            )
+            .offset(x: anchor - sliderStyle.i_trackMarkWidth/2)
+            .foregroundStyle(sliderStyle.trackTintColor)
+    }
 
     /// Animatable conformance is necessary to properly compute intermediate widths
     /// so that the width shrinks when approaching the fixed position, and expands afterwards.
@@ -54,6 +64,7 @@ struct Tint: View {
         var sliderLocation: Double
         var fixedPosition: Double
         let height: Double
+        var id: String { "\(sliderLocation):\(fixedPosition)" }
 
         @State private var width: Double = 0
         @State private var startPosition: Double = 0.0
@@ -66,7 +77,7 @@ struct Tint: View {
             RoundedRectangle(cornerRadius: height/2)
                 .frame(width: max(width,0), height: max(height,0))
                 .offset(x: startPosition)
-                .task(id: "\(sliderLocation):\(fixedPosition)") {
+                .task(id: id) {
                     if sliderLocation < fixedPosition {
                         startPosition = sliderLocation + sliderStyle.thumbWidth*0.5
                         width = fixedPosition - startPosition

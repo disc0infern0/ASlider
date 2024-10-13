@@ -156,8 +156,7 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
         NewSlider(value: $num, in: range)
             .sliderStyle(.classic) { s in
                 s.labelMarks = .every(2)
-                s.tintCentredOn = .zero
-                s.sliderIndicator = []
+                s.tintCentredOn = .lowest
             }
         Slider(value: $num, in: range)
     }
@@ -175,6 +174,7 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
             }
         Slider(value: $num, in: range)
     }
+    .padding(20)
     .frame(width: 400, height: 100)
 }
 #Preview("Dynamic") {

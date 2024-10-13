@@ -46,7 +46,7 @@ Dynamic trackmarks grow and fall in size as you drag across the slider.
 Easily display slider values underneath the slider.
 - **Accessibility labels and actions**
 - **Keyboard control**, with feedback at each end
-- **Confgurable tint bar**
+- **Confgurable tint bar**   
 The tint bar can be styled to a custom colour, and can be centred on any value you specify. E.g. On a scale of -10 to 10, you can choose to centre the tint bar on the zero position, and as you drag the slider around, the tint bar will always appear to start drawing from the zero mark.
 Additionally, you can choose to centre the tint bar on the last value; in this mode when the thumb is dragged, the tint bar always reaches back to the last slider value, so it's always simple to reference what the previous value was. It is all animated with a `smooth` animation, but the animation can also be customised.
 - **Preconfigured, tweakable, styles**
