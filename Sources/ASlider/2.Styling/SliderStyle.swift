@@ -17,7 +17,8 @@ public extension EnvironmentValues {
 /// .classic - similar to SwiftUI slider
 /// .newClassic - similar to above, but with additional thumb bounce and tint
 /// .orangey - bigger and bolder and ... more orangey!
-public struct SliderStyle {
+public struct SliderStyle: Equatable, Hashable {
+//public final class SliderStyle {
     /// dynamic trackmarkstyles have the bar marks increase in size with the dragging event
     /// For dynamic styles;
     ///     percent: governs  the width of the track that expands upwards
@@ -25,15 +26,15 @@ public struct SliderStyle {
     ///
     public init() { }
 
-    public enum TrackMarks: Equatable, Sendable {
+    public enum TrackMarks: Equatable, Hashable, Sendable {
         case every(Double), auto
         public static let none = Self.every(0)
     }
-    public enum TrackShadow: Equatable, Sendable {
+    public enum TrackShadow: Equatable, Hashable, Sendable {
         case radius(Double)
         public static let none = Self.radius(0)
     }
-    public enum ThumbShape: Equatable, Sendable {
+    public enum ThumbShape: Equatable, Hashable, Sendable {
         case none, circle, capsule, bolt, custom(String)
         var symbolName: String {
             switch self {
@@ -45,7 +46,7 @@ public struct SliderStyle {
             }
         }
     }
-    public enum CentredOn: Equatable, Sendable {
+    public enum CentredOn: Equatable, Hashable, Sendable {
         case value(Double), lastValue, lowest
         @MainActor public static var zero = Self.value(0)
     }
@@ -63,9 +64,11 @@ public struct SliderStyle {
         }
         return nil
     }
+    internal var trackBuffer: Double { max(thumbWidth, i_trackMarkWidth)}
     public var trackHeight: Double = 4
     public var trackColor: Color = Color.classicTrack
     public var trackMarks: TrackMarks = .none
+    public var trackMarkSnapping = false
     public var trackMarkWidth: Double?
     public var trackMarkHeight: Double?
     public var trackMarkActiveColor: [Color] = [.secondary]

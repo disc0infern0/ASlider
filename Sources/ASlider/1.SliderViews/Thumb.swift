@@ -25,7 +25,8 @@ struct Thumb: View {
                     interactions: .activate
                 )
                 .onKeyPress(keys: [.leftArrow, .rightArrow], action: arrowKeyPress)
-                .onChange(of: sliderValueProxy) { sliderValue = sliderValueProxy }
+                .onChange(of: sliderValueProxy) {
+                    sliderHelper.setSlider(value: $sliderValue, to: sliderValueProxy) }
                 .onChange(of: sliderValue, initial: true) { sliderValueProxy = sliderValue }
                 .offset(x: offset)
         }
@@ -35,9 +36,11 @@ struct Thumb: View {
         let trackMarkStep = sliderHelper.trackMarkStep(of: sliderStyle.trackMarks)
         let increment = trackMarkStep * (keyPress.key == .leftArrow ? -1.0 : 1.0)
         let newSliderValue = sliderValueProxy + increment
-        guard sliderHelper.isValidSliderValue(newSliderValue) else { return KeyPress.Result.ignored }
-        sliderValueProxy = newSliderValue  // Not using the proxy triggers an Apple bug; cancelling the repeats
-        return KeyPress.Result.handled
+        // Not using the proxy triggers an Apple bug; cancelling the repeats
+        return sliderHelper.setSlider(value: $sliderValueProxy, to: newSliderValue) ? KeyPress.Result.handled : KeyPress.Result.ignored
+//        guard sliderHelper.isValidSliderValue(newSliderValue) else { return KeyPress.Result.ignored }
+//        sliderValueProxy = newSliderValue  // Not using the proxy triggers an Apple bug; cancelling the repeats
+//        return KeyPress.Result.handled
     }
 
     @ViewBuilder

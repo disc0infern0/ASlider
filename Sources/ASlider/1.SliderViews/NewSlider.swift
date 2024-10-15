@@ -86,7 +86,6 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     public var body: some View {
         HStack(alignment: .center) {
             label()
-
             VStack(alignment: .leading, spacing: 0) {
                 ZStack(alignment: alignment) {
                     Track()
@@ -97,20 +96,22 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                         .allowsHitTesting(false) // allow for click on thumb to animate
                 }
                 .onTapGesture { location in
-                    sliderValue = sliderHelper.getSliderValue(of: location.x)
+                    let new = sliderHelper.getSliderValue(of: location.x)
+                    sliderHelper.setSlider(value: $sliderValue, to: new)
                 }
                 .highPriorityGesture(dragGesture() )
                 TrackLabels(labelMark: labelMark)
             }
         }
+        .id(updatedSliderStyle) //update view if style changes
         .animation(sliderStyle.sliderAnimation, value: sliderValue)
         .animation(sliderStyle.sliderAnimation, value: lastSliderValue)
         .sliderAccessibility(sliderValue: $sliderValue)
         .environment(sliderHelper)
         .environment(\.sliderStyle, updatedSliderStyle)
-        .task {
+        .onAppear {
             updatedSliderStyle = sliderHelper.styleUpdate(style: sliderStyle, step: step)
-            if sliderStyle.sliderIndicator.containsTrackMarks  {
+            if updatedSliderStyle.sliderIndicator.containsTrackMarks  {
                 alignment = .bottomLeading
             }
         }
@@ -130,8 +131,8 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                     sliderHelper.dragStarted.toggle()
                 }
                 sliderHelper.isDragging = true
-                let new = sliderHelper.getSliderValue(of: gesture.location.x )
-                if sliderHelper.isValidSliderValue(new) { sliderValue = new }
+                let new = sliderHelper.getSliderValue(of: gesture.location.x)
+                sliderHelper.setSlider(value: $sliderValue, to: new)
             }
             .onEnded { _ in
                 sliderHelper.isDragging = false
@@ -145,10 +146,16 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     let range: ClosedRange<Double> = -10 ... 10
     VStack {
         Text("classic")
-        NewSlider(value: $num, in: range)
-            .padding()
-        Slider(value: $num, in: range)
-            .padding()
+        NewSlider(value: $num, in: range, step: 2) {
+            Text("\(String(format:"%.2f", num) )")
+                .frame(width: 60)
+        }
+            .padding(5)
+        Slider(value: $num, in: range, step: 2){
+            Text("\(String(format:"%.2f", num) )")
+                .frame(width: 60)
+        }
+            .padding(5)
     }
     .frame(width: 400, height: 100)
 }

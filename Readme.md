@@ -40,7 +40,7 @@ All elements of the slider can be altered, the track height, the track marks wid
 You have 3 options to indicate the slider value on the ..er.. slider. You can specify any, or none of: trackmarks, thumb symbol, or tint bar.
 
 - **Dynamic trackmarks**     
-Dynamic trackmarks grow and fall in size as you drag across the slider.
+Dynamic trackmarks grow and fall in size as you drag across the slider. With this setting, it is recommended to not display a thumb or tintbar, but the choice is yours.
 - **Thumb/Symbol animations**
 - **Track Labels**   
 Easily display slider values underneath the slider.
@@ -50,7 +50,7 @@ Easily display slider values underneath the slider.
 The tint bar can be styled to a custom colour, and can be centred on any value you specify. E.g. On a scale of -10 to 10, you can choose to centre the tint bar on the zero position, and as you drag the slider around, the tint bar will always appear to start drawing from the zero mark.
 Additionally, you can choose to centre the tint bar on the last value; in this mode when the thumb is dragged, the tint bar always reaches back to the last slider value, so it's always simple to reference what the previous value was. It is all animated with a `smooth` animation, but the animation can also be customised.
 - **Preconfigured, tweakable, styles**
-.classic, .newClassic, .orangey.    More to come, particularly to show off the dynamic track mark setting. (I would recommend turning off the tint bar and thumb when using this setting).
+.classic, .newClassic, .orangey, & .dynamic.    
 
 ## **How?**
 You might reasonably expect that for a control with so many features, it must be terribly tedious to use.

@@ -26,7 +26,7 @@ extension SliderStyle {
         var base = SliderStyle()
         base.sliderIndicator = [.thumb, .tintBar]
         base.trackHeight = 4
-        base.trackColor = .primary
+        base.trackColor = .classicTrack
         base.trackMarks = .auto
         base.trackMarkWidth = 4
         base.labelMarks = .none
@@ -34,8 +34,8 @@ extension SliderStyle {
         base.trackTintColor = .accentColor
         base.trackShadow = .radius(0.4)
         base.thumbSymbol = .circle
-        base.thumbTintedBorder = false
-        base.thumbColor = Color("classicThumb", bundle: .module)
+        base.thumbTintedBorder = true
+        base.thumbColor = .classicThumb
         base.thumbWidth = 21
         base.thumbShapeEffect = .bounce
         return base

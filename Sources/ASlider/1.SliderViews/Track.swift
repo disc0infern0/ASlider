@@ -16,16 +16,12 @@ struct Track: View {
         Capsule()
             .fill(color)
             .frame(height: sliderStyle.trackHeight)
+            .readSize { size in
+                sliderHelper.setTrackLength( to: size.width, trackBuffer: sliderStyle.trackBuffer)
+            }
             .frame(height: clickHeight)     // } larger area for
             .contentShape(.rect)            // } tap gestures to hit
-            .readSize { size in
-                sliderHelper
-                    .setTrackLength(
-                        to: size.width,
-                        thumbWidth: sliderStyle.thumbWidth,
-                        trackMarkWidth: sliderStyle.i_trackMarkWidth
-                    )
-            }
+
     }
 }
 

@@ -42,27 +42,26 @@ final class SliderHelper {
 
     private var buffer: Double = 0
     // Calculations for positioning
-    func setTrackLength(to width: Double, thumbWidth: Double, trackMarkWidth: Double) {
-        self.thumbWidth = thumbWidth
-        buffer = max(thumbWidth, trackMarkWidth)
-        self.trackLength = width - buffer
-        scaling = (self.trackLength  ) / (range.upperBound - range.lowerBound)
+    func setTrackLength(to width: Double, trackBuffer: Double) {
+        buffer = trackBuffer
+        trackLength = width - trackBuffer
+        scaling = trackLength/range.span
     }
     /// Helper function to convert from a slider value to a track location
     func sliderLocation(of sliderValue: Double) -> Double {
-        buffer*0.5 + (sliderValue - range.lowerBound) * scaling
+        return buffer*0.5 + (sliderValue - range.lowerBound) * scaling
+    }
+    func thumbPos(of sliderValue: Double, thumbWidth: Double) -> Double {
+        sliderLocation(of: sliderValue) - thumbWidth/2
     }
 
     /// Get a new slider value from a location clicked on the track
     func getSliderValue(of x: Double) -> Double {
-        let newValue =  range.lowerBound + ((x - buffer*0.5)  / scaling)
-        if newValue < range.lowerBound { return range.lowerBound }
-        if newValue > range.upperBound { return range.upperBound }
-        return newValue
+        return  range.lowerBound + ((x - buffer*0.5)  / scaling)
     }
     /// List of values (not offsets)  for where trackMarks or trackLabels should be placed
     func markValues(from trackMarks: SliderStyle.TrackMarks) -> [Double] {
-        var marks: [Double] = []
+        var marks: [Double] = [] 
         let interval: Double = switch trackMarks {
             case .every(let interval): interval
             case .auto: (range.upperBound - range.lowerBound) / 9.0
@@ -79,13 +78,43 @@ final class SliderHelper {
     @discardableResult
     func moveSlider(sliderValue: inout Double, direction: SliderMovement, trackMarks: SliderStyle.TrackMarks) -> KeyPress.Result {
         let trackMarkStep = trackMarkStep(of: trackMarks )
-        let newSliderValue = sliderValue + trackMarkStep*direction.rawValue
-        if newSliderValue <= range.upperBound, newSliderValue >= range.lowerBound {
-            sliderValue = newSliderValue
-            return KeyPress.Result.handled
-        } else {
+        let newValue = sliderValue + trackMarkStep*direction.rawValue
+        if newValue > range.upperBound {
+            sliderValue = range.upperBound
             return KeyPress.Result.ignored
         }
+        if newValue < range.lowerBound {
+            sliderValue = range.lowerBound
+            return KeyPress.Result.ignored
+        }
+        sliderValue = newValue
+        return KeyPress.Result.handled
+    }
+
+    @discardableResult
+    func setSlider(value: Binding<Double>, to newValue: Double) -> Bool {
+        if newValue > range.upperBound {
+            value.wrappedValue = range.upperBound
+            return false
+        }
+        if newValue < range.lowerBound {
+            value.wrappedValue = range.lowerBound
+            return false
+        }
+        value.wrappedValue = trackMarkSnapping ? closestMark(to: newValue) : newValue
+        return true
+    }
+
+    func closestMark(to value: Double) -> Double {
+        guard let trackMarks = self.trackMarks else { return value}
+        let m = markValues(from: trackMarks)
+        let pairs = zip(m, m.dropFirst())
+        for pair in pairs {
+            if pair.0 <= value && value < pair.1 {
+                return value - pair.0 < pair.1 - value ? pair.0 : pair.1
+            }
+        }
+        return value
     }
 
     enum SliderMovement: Double { case left = -1; case right = 1 }
@@ -94,7 +123,7 @@ final class SliderHelper {
     func trackMarkStep(of trackMarks: SliderStyle.TrackMarks) -> Double {
         var increment: Double
         if case .every(let step) = trackMarks, step > 0 {
-            /// a specific step has been asked for, so use it ( it may be zero for integers)
+            /// a specific step has been asked for, so use it 
             increment = step
         } else {
             increment = (range.upperBound - range.lowerBound)/20
@@ -106,10 +135,9 @@ final class SliderHelper {
         return increment
     }
 
-    func isValidSliderValue(_ sliderValue: Double) -> Bool {
-        sliderValue <= range.upperBound &&
-        sliderValue >= range.lowerBound
-    }
+    /// to be copied from sliderStyle so that trackmark snapping can be done here.
+    var trackMarks: SliderStyle.TrackMarks?
+    var trackMarkSnapping: Bool = false
 
     func styleUpdate(style: SliderStyle, step: Double?) -> SliderStyle {
         var style = style
@@ -123,12 +151,17 @@ final class SliderHelper {
         }
         if let step {
             style.trackMarks = .every(step)
+            #if os(macOS)
             style.thumbSymbol = .capsule
-            style.thumbWidth = 12
+            style.thumbWidth = 10
+            #endif
+            style.trackMarkSnapping = true
         }
         if !style.sliderIndicator.contains(.thumb) {
             style.thumbWidth = 0
         }
+        self.trackMarks = style.trackMarks
+        self.trackMarkSnapping = style.trackMarkSnapping
         return style
     }
 }

@@ -27,11 +27,9 @@ struct Tint: View {
         if case sliderStyle.tintCentredOn = .lowest { false } else { true }
     }
     var shouldShowTintBar: Bool {
-        print(sliderStyle.sliderIndicator)
         for f in sliderStyle.sliderIndicator {
             if case .tintBar = f { return true }
         }
-        print("shouldn't show - apparently")
         return false
     }
     var body: some View {
