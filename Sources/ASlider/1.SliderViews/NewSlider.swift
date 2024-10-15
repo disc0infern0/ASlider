@@ -82,6 +82,7 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
         lastSliderValue = value.wrappedValue
     }
     @State private var alignment: Alignment = .leading
+    @State private var updatedSliderStyle: SliderStyle = .classic
     public var body: some View {
         HStack(alignment: .center) {
             label()
@@ -106,25 +107,16 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
         .animation(sliderStyle.sliderAnimation, value: lastSliderValue)
         .sliderAccessibility(sliderValue: $sliderValue)
         .environment(sliderHelper)
+        .environment(\.sliderStyle, updatedSliderStyle)
         .task {
+            updatedSliderStyle = sliderHelper.styleUpdate(style: sliderStyle, step: step)
             if sliderStyle.sliderIndicator.containsTrackMarks  {
                 alignment = .bottomLeading
             }
-            if sliderStyle.sliderIndicator.isEmpty  {
-                let logger = Logger(
-                    subsystem: Bundle.main.bundleIdentifier ?? "New Slider",
-                    category: "Init")
-                let message = "A valid slider indicator was not set."
-                logger.warning("\(message, privacy: .public)")
-            }
-            if let step {
-                sliderStyle.setTrackMarks(.every(step))
-                sliderStyle.sliderIndicator = [.thumb]
-                sliderStyle.thumbSymbol = .capsule
-                sliderStyle.thumbWidth = 8
-            }
-            if !sliderStyle.sliderIndicator.contains(.thumb) {
-                sliderStyle.thumbWidth = 0
+        }
+        .task(id: sliderValue) {
+            if !sliderHelper.isDragging {
+                lastSliderValue = sliderValue
             }
         }
     }
@@ -154,11 +146,9 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     VStack {
         Text("classic")
         NewSlider(value: $num, in: range)
-            .sliderStyle(.classic) { s in
-                s.labelMarks = .every(2)
-                s.tintCentredOn = .lowest
-            }
+            .padding()
         Slider(value: $num, in: range)
+            .padding()
     }
     .frame(width: 400, height: 100)
 }
@@ -167,10 +157,12 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     @Previewable @State var num: Double = 2.0
     let range: ClosedRange<Double> = -10 ... 10
     VStack {
-        Text("classic")
+        Text("Last Value")
         NewSlider(value: $num, in: range)
             .sliderStyle(.classic) { s in
                 s.tintCentredOn = .lastValue
+                s.trackTintColor = .accentColor
+                s.trackMarks = .every(2)
             }
         Slider(value: $num, in: range)
     }

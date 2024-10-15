@@ -20,7 +20,6 @@ struct Thumb: View {
         if sliderStyle.sliderIndicator.contains(.thumb) {
             let offset = sliderHelper.sliderLocation(of: sliderValue) - sliderStyle.thumbWidth*0.5
             thumb()
-                .shadow(color: sliderStyle.trackShadowColor, radius: sliderStyle.trackShadowRadius)
                 .focusable(
                     sliderHelper.isDragging ? false : true,
                     interactions: .activate
@@ -44,9 +43,12 @@ struct Thumb: View {
     @ViewBuilder
     func thumb() -> some View {
         switch sliderStyle.thumbSymbol {
+            case .circle:
+                thumbShape(color: sliderStyle.thumbColor.opacity(opacity))
+                    .contentShape( .circle )
             case .capsule:
                 /// The symbol for a capsule does not scale well, so make our own
-                thumbCapsule(color: sliderStyle.thumbColor, opacity: opacity)
+                thumbShape(color: sliderStyle.thumbColor.opacity(opacity))
                     .contentShape( .capsule )
             default:
                 myThumb(symbol: sliderStyle.thumbSymbol.symbolName)
@@ -70,18 +72,21 @@ struct Thumb: View {
         .contentShape(.circle)
         .symbolEffect(.bounce, options: .repeat(1), value: sliderHelper.dragStarted)
         .frame(width: sliderStyle.thumbWidth, height: symbol=="circle" ? sliderStyle.thumbWidth : sliderStyle.thumbHeight)
+        .shadow(color: sliderStyle.trackShadowColor, radius: sliderStyle.trackShadowRadius)
     }
 
 
-    func thumbCapsule(color: Color, opacity: Double) -> some View {
-        Capsule()
-            .fill(color.opacity(opacity))
-            .strokeBorder( sliderStyle.thumbTintedBorder ? sliderStyle.trackTintColor : .clear,
-                           lineWidth: sliderStyle.trackHeight/2,
-                           antialiased: true )
-            .frame(width: sliderStyle.thumbWidth, height: sliderStyle.thumbHeight)
-            .contentShape(.capsule)  //avoid a rectangular focus indicator
+    func thumbShape(color: Color) -> some View {
+        let i = sliderStyle.thumbWidth/6
+        return Capsule()
+            .fill(color
+                .shadow(.drop(color: sliderStyle.trackShadowColor.opacity(0.15), radius: i, x: 0, y: i))
+            )
+            .strokeBorder( sliderStyle.thumbTintedBorder ? sliderStyle.trackTintColor : .clear, lineWidth: sliderStyle.trackHeight/2, antialiased: true )
             .shapeEffect( sliderStyle.thumbShapeEffect, options: .effectRepeat(1), value: sliderHelper.dragStarted )
+            .shadow(color: sliderStyle.trackShadowColor, radius: sliderStyle.trackShadowRadius)
+            .frame(width: sliderStyle.thumbWidth, height: sliderStyle.thumbSymbol == .circle ? sliderStyle.thumbWidth : sliderStyle.thumbHeight)
+            .contentShape(.capsule)
     }
 }
 

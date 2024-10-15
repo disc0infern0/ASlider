@@ -16,18 +16,21 @@ struct SwiftUIColorBlocks: View {
             HStack{ Text("track"); trackColor }
             HStack{ Text("accent"); Color.accentColor }
             HStack{ Text("primary"); Color.primary }
-            HStack{ Text("secondary"); Color.secondary.opacity(1.0) }
-            HStack{ Text("tertiary lbl"); Color(nsColor: .tertiaryLabelColor) }
+            HStack{ Text("secondary"); Color.secondary }
+            HStack{ Text("tertiary label"); Color.tertiary }
+            HStack{ Text("quaternary lbl"); Color.quaternary }
+#if os(macOS)
             HStack{ Text("tertiary fill"); Color(nsColor: .tertiarySystemFill) }
-            HStack{ Text("quaternary lbl"); Color(nsColor: .quaternaryLabelColor) }
+
             HStack{
                 Text("quaternary fill"); 
                 Rectangle().fill(Color(nsColor: .quaternarySystemFill))
                     .border(Color.primary)
             }
+#endif
         }
         .padding()
-        .background(.yellow)
+        .background(.teal)
     }
 }
 

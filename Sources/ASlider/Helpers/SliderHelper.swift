@@ -5,6 +5,7 @@
 //  Created by Andrew on 8/31/24.
 //
 import SwiftUI
+import OSLog
 
 //extension EnvironmentValues {
 //    @Entry var sliderHelper: SliderHelper = SliderHelper()
@@ -60,7 +61,7 @@ final class SliderHelper {
         return newValue
     }
     /// List of values (not offsets)  for where trackMarks or trackLabels should be placed
-    func markValues(from trackMarks: SliderStyle.Marks) -> [Double] {
+    func markValues(from trackMarks: SliderStyle.TrackMarks) -> [Double] {
         var marks: [Double] = []
         let interval: Double = switch trackMarks {
             case .every(let interval): interval
@@ -76,7 +77,7 @@ final class SliderHelper {
     }
 
     @discardableResult
-    func moveSlider(sliderValue: inout Double, direction: SliderMovement, trackMarks: SliderStyle.Marks) -> KeyPress.Result {
+    func moveSlider(sliderValue: inout Double, direction: SliderMovement, trackMarks: SliderStyle.TrackMarks) -> KeyPress.Result {
         let trackMarkStep = trackMarkStep(of: trackMarks )
         let newSliderValue = sliderValue + trackMarkStep*direction.rawValue
         if newSliderValue <= range.upperBound, newSliderValue >= range.lowerBound {
@@ -90,7 +91,7 @@ final class SliderHelper {
     enum SliderMovement: Double { case left = -1; case right = 1 }
 
     /// Called by moveSlider and ArrowKeyPress in Thumb
-    func trackMarkStep(of trackMarks: SliderStyle.Marks) -> Double {
+    func trackMarkStep(of trackMarks: SliderStyle.TrackMarks) -> Double {
         var increment: Double
         if case .every(let step) = trackMarks, step > 0 {
             /// a specific step has been asked for, so use it ( it may be zero for integers)
@@ -110,5 +111,25 @@ final class SliderHelper {
         sliderValue >= range.lowerBound
     }
 
+    func styleUpdate(style: SliderStyle, step: Double?) -> SliderStyle {
+        var style = style
+        
+        if style.sliderIndicator.isEmpty  {
+            let logger = Logger(
+                subsystem: Bundle.main.bundleIdentifier ?? "New Slider",
+                category: "Init")
+            let message = "A valid slider indicator was not set."
+            logger.warning("\(message, privacy: .public)")
+        }
+        if let step {
+            style.trackMarks = .every(step)
+            style.thumbSymbol = .capsule
+            style.thumbWidth = 12
+        }
+        if !style.sliderIndicator.contains(.thumb) {
+            style.thumbWidth = 0
+        }
+        return style
+    }
 }
 

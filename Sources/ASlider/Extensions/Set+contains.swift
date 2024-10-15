@@ -5,6 +5,7 @@
 //  Created by Andrew on 12/10/2024.
 //
 import Foundation
+import SwiftUI
 
 extension Set where Element == SliderStyle.SliderIndicator {
     var containsTrackMarks: Bool {
@@ -13,7 +14,7 @@ extension Set where Element == SliderStyle.SliderIndicator {
         }
         return false
     }
-    var containsTintBar: Bool {
+    func containsTintBar() -> Bool {
         for f in self {
             if case .tintBar = f { return true }
         }

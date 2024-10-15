@@ -8,21 +8,7 @@ import SwiftUI
 
 extension SliderStyle {
     @MainActor
-    public static let classic = {
-        var base = SliderStyle()
-        base.trackColor =   Color("classicTrack", bundle: .module)
-        base.trackMarks =  .none
-        base.trackMarkWidth =  2
-        base.labelMarks =  .none
-        base.trackTintColor =  .accentColor
-        base.trackShadow =  .radius(0.06)
-        base.thumbSymbol =  .circle
-        base.thumbColor =  Color("classicThumb", bundle: .module)
-        base.thumbWidth =  21
-        base.thumbHeight =  21
-        base.thumbShapeEffect =  .none
-        return base
-    }()
+    public static let classic = SliderStyle()
 
     @MainActor
     public static let dynamic = {

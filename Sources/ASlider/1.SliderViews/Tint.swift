@@ -26,9 +26,16 @@ struct Tint: View {
     var showTintBarStart: Bool {
         if case sliderStyle.tintCentredOn = .lowest { false } else { true }
     }
+    var shouldShowTintBar: Bool {
+        print(sliderStyle.sliderIndicator)
+        for f in sliderStyle.sliderIndicator {
+            if case .tintBar = f { return true }
+        }
+        print("shouldn't show - apparently")
+        return false
+    }
     var body: some View {
-
-        if sliderStyle.sliderIndicator.containsTintBar {
+        if shouldShowTintBar {
             ZStack(alignment: .leading) {
                 if showTintBarStart {
                     TintBarStart
@@ -44,7 +51,7 @@ struct Tint: View {
                     radius: sliderStyle.trackShadowRadius
                 )
             }
-        }
+        } 
     }
     var TintBarStart: some View {
         Capsule()
@@ -55,39 +62,37 @@ struct Tint: View {
             .offset(x: anchor - sliderStyle.i_trackMarkWidth/2)
             .foregroundStyle(sliderStyle.trackTintColor)
     }
-
-    /// Animatable conformance is necessary to properly compute intermediate widths
-    /// so that the width shrinks when approaching the fixed position, and expands afterwards.
-    struct TintBar: View, Animatable {
-        @Environment(\.sliderStyle) var sliderStyle
-        @Environment(SliderHelper.self) var sliderHelper
-        var sliderLocation: Double
-        var fixedPosition: Double
-        let height: Double
-        var id: String { "\(sliderLocation):\(fixedPosition)" }
-
-        @State private var width: Double = 0
-        @State private var startPosition: Double = 0.0
-
-        nonisolated var animatableData: AnimatablePair<Double, Double> {
-            get { AnimatablePair(sliderLocation, fixedPosition) }
-            set { sliderLocation = newValue.first; fixedPosition = newValue.second}
-        }
-        var body: some View {
-            RoundedRectangle(cornerRadius: height/2)
-                .frame(width: max(width,0), height: max(height,0))
-                .offset(x: startPosition)
-                .task(id: id) {
-                    if sliderLocation < fixedPosition {
-                        startPosition = sliderLocation + sliderStyle.thumbWidth*0.5
-                        width = fixedPosition - startPosition
-                    } else {
-                        startPosition = fixedPosition
-                        width = sliderLocation  - fixedPosition - sliderStyle.thumbWidth*0.5
-                    }
-                }
-        }
-    }
-
 }
 
+/// Animatable conformance is necessary to properly compute intermediate widths
+/// so that the width shrinks when approaching the fixed position, and expands afterwards.
+struct TintBar: View, Animatable {
+    @Environment(\.sliderStyle) var sliderStyle
+    @Environment(SliderHelper.self) var sliderHelper
+    var sliderLocation: Double
+    var fixedPosition: Double
+    let height: Double
+    var id: String { "\(sliderLocation):\(fixedPosition)" }
+
+    @State private var width: Double = 0
+    @State private var startPosition: Double = 0.0
+
+    nonisolated var animatableData: AnimatablePair<Double, Double> {
+        get { AnimatablePair(sliderLocation, fixedPosition) }
+        set { sliderLocation = newValue.first; fixedPosition = newValue.second}
+    }
+    var body: some View {
+        RoundedRectangle(cornerRadius: height/2)
+            .frame(width: max(width,0), height: max(height,0))
+            .offset(x: startPosition)
+            .task(id: id) {
+                if sliderLocation < fixedPosition {
+                    startPosition = sliderLocation + sliderStyle.thumbWidth*0.5
+                    width = fixedPosition - startPosition
+                } else {
+                    startPosition = fixedPosition
+                    width = sliderLocation  - fixedPosition - sliderStyle.thumbWidth*0.5
+                }
+            }
+    }
+    }

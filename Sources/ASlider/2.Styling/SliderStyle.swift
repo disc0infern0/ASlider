@@ -17,9 +17,7 @@ public extension EnvironmentValues {
 /// .classic - similar to SwiftUI slider
 /// .newClassic - similar to above, but with additional thumb bounce and tint
 /// .orangey - bigger and bolder and ... more orangey!
-@Observable
-public final class SliderStyle {
-    /// regular trackmarkstyles have constant sizing.
+public struct SliderStyle {
     /// dynamic trackmarkstyles have the bar marks increase in size with the dragging event
     /// For dynamic styles;
     ///     percent: governs  the width of the track that expands upwards
@@ -27,11 +25,11 @@ public final class SliderStyle {
     ///
     public init() { }
 
-    public enum Marks: Equatable, Sendable {
+    public enum TrackMarks: Equatable, Sendable {
         case every(Double), auto
         public static let none = Self.every(0)
     }
-    public enum Shadow: Equatable, Sendable {
+    public enum TrackShadow: Equatable, Sendable {
         case radius(Double)
         public static let none = Self.radius(0)
     }
@@ -47,24 +45,10 @@ public final class SliderStyle {
             }
         }
     }
-    /*
-     //MARK: currently unused
-    public enum Rotation: Equatable, Sendable {
-        static let conversionFactor = Double.pi / 180
-        case radians(Double), degrees(Double)
-        var radian: Double {
-            switch self {
-                case .radians(let r):   r
-                case .degrees(let d):   d * Self.conversionFactor
-            }
-        }
-    }
-     */
     public enum CentredOn: Equatable, Sendable {
         case value(Double), lastValue, lowest
         @MainActor public static var zero = Self.value(0)
     }
-
     public enum SliderIndicator : Sendable, Equatable, Hashable {
         case thumb, tintBar, trackMarks(percent: Double, growth: Double)
     }
@@ -80,16 +64,12 @@ public final class SliderStyle {
         return nil
     }
     public var trackHeight: Double = 4
-    public var trackColor: Color = .primary.opacity(0.5)
-    public var trackMarks: Marks = .none
-    /// Allow modification of the trackMarks from the step: parameter of NewSlider.task (aka onAppear)
-    internal func setTrackMarks(_ m: Marks) {
-        trackMarks = m
-    }
+    public var trackColor: Color = Color.classicTrack
+    public var trackMarks: TrackMarks = .none
     public var trackMarkWidth: Double?
     public var trackMarkHeight: Double?
     public var trackMarkActiveColor: [Color] = [.secondary]
-    public var trackMarkInActiveColor: [Color] = [Color(nsColor: .tertiaryLabelColor)]
+    public var trackMarkInActiveColor: [Color] = [.tertiary]
 
     internal var i_trackMarkWidth: Double {
         if let width = trackMarkWidth {width} else { trackHeight * 0.4}
@@ -99,11 +79,11 @@ public final class SliderStyle {
             max(thumbHeight/2.5, trackHeight ) }
     }
 
-    public var labelMarks: Marks = .none
+    public var labelMarks: TrackMarks = .none
 
     public var tintCentredOn: CentredOn = .lowest
-    public var trackTintColor: Color = .blue
-    public var trackShadow: Shadow = .none
+    public var trackTintColor: Color = .accentColor
+    public var trackShadow: TrackShadow = .radius(0.3)
     public var trackShadowRadius: Double {
         switch trackShadow {
             case .radius(let r): return r
@@ -111,13 +91,38 @@ public final class SliderStyle {
     }
     public var trackShadowColor: Color {
         if trackShadowRadius > 0 {
-            trackTintColor
+            .gray
         } else { .clear }
     }
     public var thumbSymbol: ThumbShape = .circle
     public var thumbTintedBorder = false
-    public var thumbColor: Color = .gray
+    public var thumbColor: Color = Color.classicThumb
+#if os(macOS)
     public var thumbWidth: Double = 21
     public var thumbHeight: Double = 21
+#else
+    public var thumbWidth: Double = 27
+    public var thumbHeight: Double = 27
+#endif
     public var thumbShapeEffect: ShapeEffects = .bounce
 }
+
+/*
+ //MARK: currently unused
+ public enum Rotation: Equatable, Sendable {
+ static let conversionFactor = Double.pi / 180
+ case radians(Double), degrees(Double)
+ var radian: Double {
+ switch self {
+ case .radians(let r):   r
+ case .degrees(let d):   d * Self.conversionFactor
+ }
+ }
+ }
+
+ /// Allow modification of the trackMarks from the step: parameter of NewSlider.task (aka onAppear)
+ internal func setTrackMarks(_ m: TrackMarks) {
+ trackMarks = m
+ }
+
+ */
