@@ -48,6 +48,7 @@ struct Tint: View {
                     color: sliderStyle.trackShadowColor,
                     radius: sliderStyle.trackShadowRadius
                 )
+                .drawingGroup() // compose animations with Metal optimisation
             }
         } 
     }
