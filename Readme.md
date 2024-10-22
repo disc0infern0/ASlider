@@ -6,7 +6,7 @@ A new slider ...
 ... remarkably similar to the old one. 
 
 
-In fact it is so similar, that if you change all occurrences of Slider to NewSlider, it's likely* that you will barely detect a difference. (Notwithstanding the inconvenience of having to import this package and add an import statement to your code). 
+In fact it is so similar, that if you change all occurrences of Slider to NewSlider, and make no other changes, it's likely* that you will barely detect a difference. (Notwithstanding the inconvenience of having to import this package and add an import statement to your code). 
 
 <details>
 <summary>Preface</summary>
@@ -19,7 +19,7 @@ Having to add a package to your code and import a library whenever you want to u
 NewSlider is fully Swift 6 compatible, and passess all compiler concurrency checks.
 
 *Footnote to "likely*"*.  
-Not quite *all* of the Slider initialisers are currently supported. If you specify maximum and minimum values or labels, then you will have to tweak your initialiser to use the slider style settings to achieve the same effect. This seems quite rare, but of course, ymmv.
+Not quite *all* of the Slider initialisers are currently supported. If you specify maximum and minimum values or labels in the Slider initialiser, then you would have to add closure style settings to achieve the same effect. Use of these parameters seems quite rare, but of course, [ymmv](https://www.howtogeek.com/693183/what-does-ymmv-mean-and-how-do-you-use-it/).
 
 </details>
 
@@ -56,7 +56,7 @@ Additionally, you can choose to centre the tint bar on the last value; in this m
 You might reasonably expect that for a control with so many features, it must be terribly tedious to use.
 <details>
 <summary> Editors note 1</summary>
-There is probably a square law of proportionalilty that dicates that explains why any increase in scope must have an exponentially higher cost of use, and that any hope for an alternative is just a pipe dream.
+There is probably a square law of proportionalilty that explains why any increase in scope must have an exponentially higher cost of use, and that any hope for an alternative is just a pipe dream.
 </details>
 <details>
 <summary> Editors note 2</summary>
@@ -90,7 +90,7 @@ NewSlider($myDbl, in: 0...10)
    .contentTransition(.numericText(value: myDbl))
 }
 ```
-For most uses of Slider, the init should be a transparent change. It accepts a closure to display the numeric value to the left of the slider, similarly to the Apple Slider, but it also accepts a further closure to display label values underneath the slider.   
+For most uses of Slider, the init should be a transparent change. It accepts a closure to display the numeric value to the left of the slider, similarly to the Apple Slider, but it also accepts a further closure to display label values underneath the slider. (On iOS, the new slider also resolves the longstanding Apple bug where the label to the left of the slider does not display)  
 The styling/appearance of the slider is done via the environment, similarly to how Apple does it for other controls.   
 
 
@@ -132,5 +132,8 @@ Using the above closure method for modifying a theme gives you the benefit of fi
 
 I still remain hopeful that Apple will update the classic SwiftUI Slider to be a little more stylable, as they have done with other controls, but for now, this might suffice.
 
+# Coming soon (?)
 
+*Radial Sliders*
+twistable sliders that look like rotary volume controls, with all the customisation that you'd expect.
 
