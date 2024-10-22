@@ -66,8 +66,9 @@ public struct SliderStyle: Equatable, Hashable {
     }
     internal var trackBuffer: Double { max(thumbWidth, i_trackMarkWidth)}
     public var trackHeight: Double = 4
-    public var trackColor: Color = Color.classicTrack
+    public var trackColor: Color = .classicTrack
     public var trackMarks: TrackMarks = .none
+    /// trackMarkSnapping controls whether trackmarks are the only permissible values
     public var trackMarkSnapping = false
     public var trackMarkWidth: Double?
     public var trackMarkHeight: Double?

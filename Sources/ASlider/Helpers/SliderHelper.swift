@@ -15,6 +15,7 @@ import OSLog
 final class SliderHelper {
     var range: ClosedRange<Double>
     var isInt = false
+    let step: Double?
 
     var trackLength: Double = 1  // must be reset
     var thumbWidth: Double = 1 // must be reset
@@ -25,12 +26,13 @@ final class SliderHelper {
     /// A value that changes when a drag gesture is started. Used to (optionally) animate the thumb
     var dragStarted: Bool = false
 
-    init(range: ClosedRange<Double>, isInt: Bool) {
+    init(range: ClosedRange<Double>, isInt: Bool, step: Double? = nil) {
         guard range.lowerBound < range.upperBound else {
             fatalError("Range must be lower than upper bound")
         }
         self.range = range
         self.isInt = isInt
+        self.step = step
     }
 
     var minThumbPos: Double {
@@ -76,19 +78,10 @@ final class SliderHelper {
     }
 
     @discardableResult
-    func moveSlider(sliderValue: inout Double, direction: SliderMovement, trackMarks: SliderStyle.TrackMarks) -> KeyPress.Result {
+    func moveSlider(sliderValue: Binding<Double>, direction: SliderMovement, trackMarks: SliderStyle.TrackMarks) -> KeyPress.Result {
         let trackMarkStep = trackMarkStep(of: trackMarks )
-        let newValue = sliderValue + trackMarkStep*direction.rawValue
-        if newValue > range.upperBound {
-            sliderValue = range.upperBound
-            return KeyPress.Result.ignored
-        }
-        if newValue < range.lowerBound {
-            sliderValue = range.lowerBound
-            return KeyPress.Result.ignored
-        }
-        sliderValue = newValue
-        return KeyPress.Result.handled
+        let newValue = sliderValue.wrappedValue + trackMarkStep*direction.rawValue
+        return setSlider(value: sliderValue, to: newValue) ? KeyPress.Result.handled : KeyPress.Result.ignored
     }
 
     @discardableResult
@@ -139,7 +132,7 @@ final class SliderHelper {
     var trackMarks: SliderStyle.TrackMarks?
     var trackMarkSnapping: Bool = false
 
-    func styleUpdate(style: SliderStyle, step: Double?) -> SliderStyle {
+    func styleUpdate(style: SliderStyle) -> SliderStyle {
         var style = style
         
         if style.sliderIndicator.isEmpty  {
@@ -150,10 +143,10 @@ final class SliderHelper {
             logger.warning("\(message, privacy: .public)")
         }
         if let step {
-            style.trackMarks = .every(step)
             #if os(macOS)
             style.thumbSymbol = .capsule
             style.thumbWidth = 10
+            style.trackMarks = .every(step)
             #endif
             style.trackMarkSnapping = true
         }

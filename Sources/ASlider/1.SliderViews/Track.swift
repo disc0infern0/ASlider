@@ -21,7 +21,7 @@ struct Track: View {
             }
             .frame(height: clickHeight)     // } larger area for
             .contentShape(.rect)            // } tap gestures to hit
-
+            .id(sliderStyle) // redraw and recalculate size if sliderStyle changes
     }
 }
 

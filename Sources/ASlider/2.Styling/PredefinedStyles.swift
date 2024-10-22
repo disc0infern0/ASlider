@@ -23,22 +23,22 @@ extension SliderStyle {
     }()
     @MainActor
     public static let newClassic = {
-        var base = SliderStyle()
-        base.sliderIndicator = [.thumb, .tintBar]
-        base.trackHeight = 4
-        base.trackColor = .classicTrack
-        base.trackMarks = .auto
-        base.trackMarkWidth = 4
-        base.labelMarks = .none
-        base.tintCentredOn = .zero
-        base.trackTintColor = .accentColor
-        base.trackShadow = .radius(0.4)
-        base.thumbSymbol = .circle
-        base.thumbTintedBorder = true
-        base.thumbColor = .classicThumb
-        base.thumbWidth = 21
-        base.thumbShapeEffect = .bounce
-        return base
+        var style = SliderStyle()
+        style.sliderIndicator = [.thumb, .tintBar]
+        style.trackHeight = 4
+        style.trackColor = .classicTrack
+        style.trackMarks = .auto
+        style.trackMarkWidth = 4
+        style.labelMarks = .none
+        style.tintCentredOn = .zero
+        style.trackTintColor = .accentColor
+        style.trackShadow = .radius(0.4)
+        style.thumbSymbol = .circle
+        style.thumbTintedBorder = true
+        style.thumbColor = .classicThumb
+        style.thumbWidth = 21
+        style.thumbShapeEffect = .bounce
+        return style
     } ()
 
     @MainActor

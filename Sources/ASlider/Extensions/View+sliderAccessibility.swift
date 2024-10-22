@@ -19,35 +19,34 @@ struct SliderAccessibility: ViewModifier  {
             .accessibilityAction(named: Text("more")) {
                 sliderHelper
                     .moveSlider(
-                        sliderValue: &sliderValue,
+                        sliderValue: $sliderValue,
                         direction: .right,
                         trackMarks: sliderStyle.trackMarks
                     )
             }
             .accessibilityAction(named: Text("less")) {
-                sliderHelper.moveSlider(sliderValue: &sliderValue, direction: .left,
+                sliderHelper.moveSlider(sliderValue: $sliderValue, direction: .left,
                                         trackMarks: sliderStyle.trackMarks)
             }
             .accessibilityAdjustableAction { direction in
                 switch direction {
                     case .increment:
-                        sliderHelper.moveSlider(sliderValue: &sliderValue, direction: .right,
+                        sliderHelper.moveSlider(sliderValue: $sliderValue, direction: .right,
                                                 trackMarks: sliderStyle.trackMarks)
                     case .decrement:
-                        sliderHelper.moveSlider(sliderValue: &sliderValue, direction: .left,
+                        sliderHelper.moveSlider(sliderValue: $sliderValue, direction: .left,
                                                 trackMarks: sliderStyle.trackMarks)
                     @unknown default:
                         break
                 }
             }
     }
-  
 }
 
 extension View {
     @MainActor
     func sliderAccessibility(sliderValue: Binding<Double>) -> some View {
-        self.modifier(SliderAccessibility(sliderValue: sliderValue))
+        modifier(SliderAccessibility(sliderValue: sliderValue))
     }
 }
 

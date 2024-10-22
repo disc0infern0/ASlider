@@ -24,7 +24,6 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
     let isIntValue: Bool  // record whether we are called with an integer binding or not
     @Environment(\.sliderStyle) var sliderStyle
     @State var sliderHelper: SliderHelper
-    let step: Double?
 
     public init(
         value: Binding<Double>,
@@ -77,12 +76,10 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
         self.isIntValue = isIntValue
         self.label = label
         self.labelMark = labelMark
-        _sliderHelper = State(wrappedValue: SliderHelper( range: range, isInt: isIntValue))
-        self.step = step
+        _sliderHelper = State(wrappedValue: SliderHelper( range: range, isInt: isIntValue, step: step))
         lastSliderValue = value.wrappedValue
     }
     @State private var alignment: Alignment = .leading
-    @State private var updatedSliderStyle: SliderStyle = .classic
     public var body: some View {
         HStack(alignment: .center) {
             label()
@@ -103,15 +100,13 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                 TrackLabels(labelMark: labelMark)
             }
         }
-        .id(updatedSliderStyle) //update view if style changes
         .animation(sliderStyle.sliderAnimation, value: sliderValue)
         .animation(sliderStyle.sliderAnimation, value: lastSliderValue)
         .sliderAccessibility(sliderValue: $sliderValue)
         .environment(sliderHelper)
-        .environment(\.sliderStyle, updatedSliderStyle)
+        .sliderStyle(sliderHelper.styleUpdate(style: sliderStyle))
         .onAppear {
-            updatedSliderStyle = sliderHelper.styleUpdate(style: sliderStyle, step: step)
-            if updatedSliderStyle.sliderIndicator.containsTrackMarks  {
+            if sliderStyle.sliderIndicator.containsTrackMarks  {
                 alignment = .bottomLeading
             }
         }
@@ -156,6 +151,9 @@ public struct NewSlider<LabelContent: View, LabelMarkContent: View>: View {
                 .frame(width: 60)
         }
             .padding(5)
+    }.sliderStyle(.classic) { s in
+        s.trackMarks = .every(2)
+        s.labelMarks = .every(4)
     }
     .frame(width: 400, height: 100)
 }

@@ -20,6 +20,6 @@ extension Color {
         Color(.quaternaryLabel)
 
     public static let classicThumb = Color("classicThumbIOS", bundle: .module)
-    public static let classicTrack = Color("classicTrack", bundle: .module)
+    public static let classicTrack = Color("classicTrackIOS", bundle: .module)
 #endif
 }

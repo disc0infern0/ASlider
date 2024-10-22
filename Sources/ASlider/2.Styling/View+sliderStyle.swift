@@ -7,7 +7,6 @@
 import SwiftUI
 
 extension View {
-    @MainActor
     public func sliderStyle(_ s: SliderStyle) -> some View {
         environment(\.sliderStyle, s)
     }
@@ -18,7 +17,6 @@ extension View {
     ///   .sliderStyle(.orangey) { style in
     ///    style.thumbWidth = 40
     ///  }
-    @MainActor
     public func sliderStyle(_ base: SliderStyle = .newClassic, modifiers: @escaping (_ style: inout SliderStyle) -> Void  ) -> some View {
         environment(\.sliderStyle, { var new = base; modifiers(&new); return new }())
     }

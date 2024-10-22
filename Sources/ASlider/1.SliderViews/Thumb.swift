@@ -38,9 +38,6 @@ struct Thumb: View {
         let newSliderValue = sliderValueProxy + increment
         // Not using the proxy triggers an Apple bug; cancelling the repeats
         return sliderHelper.setSlider(value: $sliderValueProxy, to: newSliderValue) ? KeyPress.Result.handled : KeyPress.Result.ignored
-//        guard sliderHelper.isValidSliderValue(newSliderValue) else { return KeyPress.Result.ignored }
-//        sliderValueProxy = newSliderValue  // Not using the proxy triggers an Apple bug; cancelling the repeats
-//        return KeyPress.Result.handled
     }
 
     @ViewBuilder
@@ -80,11 +77,14 @@ struct Thumb: View {
 
 
     func thumbShape(color: Color) -> some View {
+        #if os(macOS)
+        let shadowStyle:ShadowStyle = .drop(color: sliderStyle.trackShadowColor.opacity(0.15), radius: 0, x:0, y:1)
+        #else
         let i = sliderStyle.thumbWidth/6
+        let shadowStyle:ShadowStyle = .drop(color: sliderStyle.trackShadowColor.opacity(0.15), radius: i, x:0, y:i)
+        #endif
         return Capsule()
-            .fill(color
-                .shadow(.drop(color: sliderStyle.trackShadowColor.opacity(0.15), radius: i, x: 0, y: i))
-            )
+            .fill(color.shadow(shadowStyle) )
             .strokeBorder( sliderStyle.thumbTintedBorder ? sliderStyle.trackTintColor : .clear, lineWidth: sliderStyle.trackHeight/2, antialiased: true )
             .shapeEffect( sliderStyle.thumbShapeEffect, options: .effectRepeat(1), value: sliderHelper.dragStarted )
             .shadow(color: sliderStyle.trackShadowColor, radius: sliderStyle.trackShadowRadius)
