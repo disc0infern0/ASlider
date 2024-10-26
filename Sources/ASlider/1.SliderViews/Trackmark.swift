@@ -6,14 +6,14 @@
 //
 import SwiftUI
 
-struct Trackmark: View {
+struct Trackmark: View, Animatable {
     @Environment(\.sliderStyle) var sliderStyle
     let gradient: LinearGradient
     var height: Double
-//    nonisolated var animatableData: Double {
-//        get { height }
-//        set { height = newValue}
-//    }
+    nonisolated var animatableData: Double {
+        get { height }
+        set { height = newValue}
+    }
 
     var body: some View {
         Capsule()
@@ -22,7 +22,6 @@ struct Trackmark: View {
                 width: sliderStyle.i_trackMarkWidth,
                 height: height
             )
-            .animation(.easeOut(duration: 0.5), value: height)
     }
 }
 
