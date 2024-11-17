@@ -21,21 +21,21 @@ struct SliderAccessibility: ViewModifier  {
                     .moveSlider(
                         sliderValue: $sliderValue,
                         direction: .right,
-                        trackMarks: sliderStyle.trackMarks
+                        trackMarks: sliderStyle.trackMarkInterval
                     )
             }
             .accessibilityAction(named: Text("less")) {
                 sliderHelper.moveSlider(sliderValue: $sliderValue, direction: .left,
-                                        trackMarks: sliderStyle.trackMarks)
+                                        trackMarks: sliderStyle.trackMarkInterval)
             }
             .accessibilityAdjustableAction { direction in
                 switch direction {
                     case .increment:
                         sliderHelper.moveSlider(sliderValue: $sliderValue, direction: .right,
-                                                trackMarks: sliderStyle.trackMarks)
+                                                trackMarks: sliderStyle.trackMarkInterval)
                     case .decrement:
                         sliderHelper.moveSlider(sliderValue: $sliderValue, direction: .left,
-                                                trackMarks: sliderStyle.trackMarks)
+                                                trackMarks: sliderStyle.trackMarkInterval)
                     @unknown default:
                         break
                 }

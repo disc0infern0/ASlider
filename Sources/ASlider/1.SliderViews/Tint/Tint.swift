@@ -9,63 +9,72 @@ import SwiftUI
 
 struct Tint: View {
     let sliderValue: Double
-    let lastSliderValue: Double
-    @Environment(\.sliderStyle) var sliderStyle
     @Environment(SliderHelper.self) var sliderHelper
+    
+    var body: some View {
+        if shouldShowTintBar {
+            switch sliderHelper.orientation {
+                case .linear: LinearTint
+                case .radial: RadialTint(value: sliderValue)
+            }
+        }
+    }
+
+
     var anchor:  Double {
-        switch(sliderStyle.tintCentredOn) {
+        switch(sliderHelper.tintCentredOn) {
             case .lowest: 0
             case .value(let fixedPoint):
-                sliderHelper.sliderLocation(of: fixedPoint)
+                sliderHelper.sliderPosition(of: fixedPoint)
             case .lastValue:
-                sliderHelper.sliderLocation(of: lastSliderValue)
+                sliderHelper.sliderPosition(of: sliderHelper.lastSliderValue)
         }
     }
 
     /// A capsule overlaid on top of the track start point  would destroy the nice rounded edge of the track
     var showTintBarStart: Bool {
-        if case sliderStyle.tintCentredOn = .lowest { false } else { true }
+        if case sliderHelper.tintCentredOn = .lowest { false } else { true }
     }
     var shouldShowTintBar: Bool {
-        for f in sliderStyle.sliderIndicator {
-            if case .tintBar = f { return true }
+        for f in sliderHelper.sliderIndicator {
+            if case .tintedTrack = f { return true }
         }
         return false
     }
-    var body: some View {
-        if shouldShowTintBar {
-            ZStack(alignment: .leading) {
-                if showTintBarStart {
-                    TintBarStart
-                }
-                TintBar(
-                    sliderLocation: sliderHelper.sliderLocation(of: sliderValue),
-                    fixedPosition: anchor,
-                    height: sliderStyle.trackHeight
-                )
-                .foregroundStyle(sliderStyle.trackTintColor)
-                .shadow(
-                    color: sliderStyle.trackShadowColor,
-                    radius: sliderStyle.trackShadowRadius
-                )
+
+
+    var LinearTint: some View {
+        ZStack(alignment: .leading) {
+            if showTintBarStart {
+                TintBarStart
             }
-        } 
+            TintBar(
+                sliderLocation: sliderHelper.sliderPosition(of: sliderValue),
+                fixedPosition: anchor,
+                height: sliderHelper.trackHeight
+            )
+            .shadow(
+                color: sliderHelper.trackShadowColor,
+                radius: sliderHelper.trackShadowRadius
+            )
+        }
+        .foregroundStyle(sliderHelper.trackTintColor)
+        .allowsHitTesting(false)
     }
+
     var TintBarStart: some View {
         Capsule()
             .frame(
-                width: sliderStyle.i_trackMarkWidth,
-                height: sliderStyle.i_trackMarkHeight
+                width: sliderHelper.trackMarkWidth,
+                height: sliderHelper.trackMarkHeight
             )
-            .offset(x: anchor - sliderStyle.i_trackMarkWidth/2)
-            .foregroundStyle(sliderStyle.trackTintColor)
+            .offset(x: anchor - sliderHelper.trackMarkWidth/2)
     }
 }
 
 /// Animatable conformance is necessary to properly compute intermediate widths
 /// so that the width shrinks when approaching the fixed position, and expands afterwards.
 struct TintBar: View, Animatable {
-    @Environment(\.sliderStyle) var sliderStyle
     @Environment(SliderHelper.self) var sliderHelper
     var sliderLocation: Double
     var fixedPosition: Double
@@ -85,11 +94,11 @@ struct TintBar: View, Animatable {
             .offset(x: startPosition)
             .task(id: id) {
                 if sliderLocation < fixedPosition {
-                    startPosition = sliderLocation + sliderStyle.thumbWidth*0.5
+                    startPosition = sliderLocation + sliderHelper.thumbWidth*0.5
                     width = fixedPosition - startPosition
                 } else {
                     startPosition = fixedPosition
-                    width = sliderLocation  - fixedPosition - sliderStyle.thumbWidth*0.5
+                    width = sliderLocation  - fixedPosition - sliderHelper.thumbWidth*0.5
                 }
             }
     }
