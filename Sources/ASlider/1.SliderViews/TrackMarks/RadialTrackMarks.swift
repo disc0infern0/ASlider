@@ -25,8 +25,7 @@ struct RadialTrackMarks: View, Animatable {
             )
             .offset(
                 x: 0,
-                y: -(sliderHelper.innerRadius + sliderHelper.trackHeight*0.5
-                     )
+                y: -(sliderHelper.outerRadius-sliderHelper.trackHeight*0.5 )
             )
             .rotationEffect(angle)
         }
@@ -49,15 +48,16 @@ struct RadialTrackMarks: View, Animatable {
     }
     .frame(width: 320, height: 400)
     .readFrame {
-        style.sliderIndicator = [.thumb]
+        style.sliderIndicator = [.thumb, .tintedTrackMarks]
         style.trackMarkInterval = .auto
         style.trackMarkInActiveColors = [.classicThumb]
-        style.trackMarkWidth = 15
-        style.trackMarkHeight = 60
-        style.thumbWidth = 40
-        style.thumbColorAtRest = .green
+        style.trackMarkWidth = 30
+        style.trackMarkHeight = 70
+        style.thumbWidth = 20
+        style.thumbColorAtRest = .red
         style.thumbSymbol = .circle
-//        style.trackHeight = 20
+        style.trackHeight = 10
+        style.trackColor = .orange
         style.trackMarkActiveColors = [.green]
         sliderHelper.updateStyle(style)
         sliderHelper.setTrackSize(to: $0)
@@ -71,9 +71,6 @@ struct RadialTrackMarks: View, Animatable {
         NewSlider(value: $sliderValue, in: 0...1)
     }
     .frame(width: 400, height: 400)
-    .sliderStyle(.volumeControl) { style in
-        style.trackMarkInActiveColors = [.gray]
-        style.trackMarkActiveColors = [.green]
-    }
+    .sliderStyle(.volumeControl)
     .padding(2)
 }

@@ -68,8 +68,8 @@ struct TheThumb: View, Animatable {
                     .offset(x: sliderHelper.sliderPosition(of: sliderValue) - sliderHelper.thumbWidth*0.5)
             case .radial:
                 let angle = sliderHelper.angle(of: sliderValue)
-                // calculate midway on track (average of outerradius and innerradius)
-                let r = 0.5 * (sliderHelper.innerRadius + sliderHelper.outerRadius )
+                // calculate midway on track 
+                let r = sliderHelper.innerRadius + 0.5*sliderHelper.trackHeight
                 theThumb
                     .position(x: sliderHelper.centre.x, y: sliderHelper.centre.y - r)
                     .rotationEffect(angle)

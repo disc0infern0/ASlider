@@ -121,7 +121,7 @@ final class SliderHelper {
             scaling = trackLength / range.span
             let smallestDimension = min(rect.width, rect.height)
             outerRadius = max(0, smallestDimension * 0.5)
-            innerRadius = max(0, outerRadius - sliderStyle.trackMarkHeight)
+            innerRadius = max(0, outerRadius - sliderStyle.trackHeight)
             let heightDifference =
                 0.5 * (sliderStyle.trackMarkHeight - sliderStyle.trackHeight)
             if heightDifference > 0, outerRadius > heightDifference {
@@ -241,18 +241,29 @@ final class SliderHelper {
         }
         func auto(linear: Bool) -> Double {
             if linear {
-                range.span / 20
+                return range.span / 20
             } else {
-                2.2
-                    * Angle(
-                        radians: atan(
-                            sliderStyle.trackMarkWidth * 0.5 / innerRadius)
-                    )
-                    .radians
+                let adjacent = innerRadius + sliderStyle.trackHeight*0.5 - sliderStyle.trackMarkHeight*0.5
+                return Self.angleInc(radius: adjacent, style: sliderStyle)
             }
         }
     }
 
+    static func angleInc(radius: Double, style: SliderStyle) -> Double {
+        let ratio = style.trackMarkHeight / style.trackMarkWidth
+        let opposite = 1.1*style.trackMarkWidth * 0.5
+        let curveCompensator = switch ratio {
+            case _ where ratio >= 3.0: 1.1
+//            case 3.0: 1.1
+//            case 2.5: 1.0
+//            case 2.0: 0.92
+//            case 1.5: 0.85
+//            case 1.0: 0.8
+            case _ where ratio <= 1.0: 0.8
+            default: 0.8 + (ratio-1.0)*(1.0-0.8)/(3.0-1.0)
+        }
+        return curveCompensator * 2.0 * Angle( radians: atan(opposite/radius) ).radians 
+    }
     // #################################################
     enum SliderMovement: Double {
         case left = -1

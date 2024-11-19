@@ -15,12 +15,15 @@ import SwiftUI
 ///  .classic which emulates the Apple slider,
 ///  .newClassic which updates the Apple slider with a bounce animation to the thumb and transparent selection
 
-//public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View, V: BinaryFloatingPoint>: View
-//where V.Stride : BinaryFloatingPoint {
+public struct NewSlider<
+    Label: View, LabelMarkContent: View, ValueLabel: View,
+    V: BinaryFloatingPoint
+>: View
+where V.Stride: BinaryFloatingPoint {
 
-public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View>:
-    View
-{
+    //public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View>:
+    //    View
+    //{
     @Binding var sliderValue: Double
     let range: ClosedRange<Double>
     let step: Double?
@@ -30,89 +33,13 @@ public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View>:
     var maximumValueLabel: () -> ValueLabel = { EmptyView() as! ValueLabel }
     var onEditingChanged: (Bool) -> Void = { _ in }
 
-    let isIntValue: Bool = false  // record whether we are called with an integer binding or not
+    let isIntValue: Bool  // record whether we are called with an integer binding or not
 
-    //    /// Classic Apple Slider init (with addition of labelMark to display slider values under the slider)
-    //    public init(
-    //        value: Binding<V>,
-    //        in range: ClosedRange<V>,
-    //        step: V.Stride? = nil,
-    //        label: @escaping () -> Label = { EmptyView() },
-    //        labelMark: @escaping (_:Double)->LabelMarkContent = { d in
-    //            Text("\(d.formatted(.number.precision(.fractionLength(1))))")
-    //                .font(.caption2)
-    //        },
-    //        minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-    //        maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-    //        onEditingChanged: @escaping (Bool) -> Void = { _ in }
-    //    ) {
-    //        self.init(
-    //            value:Binding { Double(value.wrappedValue) } set: { value.wrappedValue = V($0) },
-    //            in: Double(range.lowerBound)...Double(range.upperBound),
-    //            step: step == nil ? nil : Double(step!),
-    //            isIntValue: false,
-    //            label: label,
-    //            labelMark: labelMark,
-    //            minimumValueLabel: minimumValueLabel,
-    //            maximumValueLabel: maximumValueLabel,
-    //            onEditingChanged: onEditingChanged
-    //        )
-    //    }
-    //    public init(
-    //        value: Binding<Int>,
-    //        in range: ClosedRange<Int>,
-    //        step: Int? = nil,
-    //        label: @escaping () -> Label = { EmptyView() },
-    //        labelMark: @escaping (_:Double)->LabelMarkContent = { d in
-    //            Text("\(d.formatted(.number.precision(.fractionLength(1))))")
-    //                .font(.caption2)
-    //        },
-    //        minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-    //        maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-    //        onEditingChanged: @escaping (Bool) -> Void = { _ in }
-    //    ) {
-    //        let doubleStep: Double? = if let step { Double(step) } else { nil }
-    //        self.init(
-    //            value: Binding { Double(value.wrappedValue) } set: { value.wrappedValue = Int($0.rounded()) },
-    //            in: Double(range.lowerBound)...Double(range.upperBound),
-    //            step: doubleStep,
-    //            isIntValue: true,
-    //            label: label,
-    //            labelMark: labelMark,
-    //            minimumValueLabel: minimumValueLabel,
-    //            maximumValueLabel: maximumValueLabel,
-    //            onEditingChanged: onEditingChanged
-    //        )
-    //    }
-    //    private
-    //    init(
-    //        value: Binding<V>,
-    //                in range: ClosedRange<V>,
-    //                step: V.Stride? = nil,
-    //                label: @escaping () -> Label = { EmptyView() },
-    //                labelMark: @escaping (_:Double)->LabelMarkContent = { d in
-    //                    Text("\(d.formatted(.number.precision(.fractionLength(1))))")
-    //                        .font(.caption2)
-    //                },
-    //                minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-    //                maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-    //                onEditingChanged: @escaping (Bool) -> Void = { _ in }
-    //    ) {
-    //        _sliderValue = Binding { Double(value.wrappedValue) } set: { value.wrappedValue = V($0) }
-    //        self.range = Double(range.lowerBound)...Double(range.upperBound)
-    //        self.step = if let step  { Double(step) } else { nil }
-    ////        self.isIntValue = isIntValue
-    //        self.label = label
-    //        self.labelMark = labelMark
-    //        self.minimumValueLabel = minimumValueLabel
-    //        self.maximumValueLabel = maximumValueLabel
-    //        self.onEditingChanged = onEditingChanged
-    //    }
-    init(
-        value: Binding<Double>,
-        in range: ClosedRange<Double>,
-        step: Double? = nil,
-        // isIntValue: Bool,
+    /// Classic Apple Slider init (with addition of labelMark to display slider values under the slider)
+    public init(
+        value: Binding<V>,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
         label: @escaping () -> Label = { EmptyView() },
         labelMark: @escaping (_: Double) -> LabelMarkContent = { d in
             Text("\(d.formatted(.number.precision(.fractionLength(1))))")
@@ -122,10 +49,72 @@ public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View>:
         maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
         onEditingChanged: @escaping (Bool) -> Void = { _ in }
     ) {
-        self._sliderValue = value
-        self.range = range
-        self.step = step
-        //        self.isIntValue = isIntValue
+        self.init(
+            value: Binding {
+                Double(value.wrappedValue)
+            } set: {
+                value.wrappedValue = V($0)
+            },
+            in: Double(range.lowerBound)...Double(range.upperBound),
+            step: step == nil ? nil : Double(step!),
+            isIntValue: false,
+            label: label,
+            labelMark: labelMark,
+            minimumValueLabel: minimumValueLabel,
+            maximumValueLabel: maximumValueLabel,
+            onEditingChanged: onEditingChanged
+        )
+    }
+    public init(
+        value: Binding<Int>,
+        in range: ClosedRange<Int>,
+        step: Int? = nil,
+        label: @escaping () -> Label = { EmptyView() },
+        labelMark: @escaping (_: Double) -> LabelMarkContent = { d in
+            Text("\(d.formatted(.number.precision(.fractionLength(1))))")
+                .font(.caption2)
+        },
+        minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
+        maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
+        onEditingChanged: @escaping (Bool) -> Void = { _ in }
+    ) {
+        let doubleStep: Double? = if let step { Double(step) } else { nil }
+        self.init(
+            value: Binding {
+                Double(value.wrappedValue)
+            } set: {
+                value.wrappedValue = Int($0.rounded())
+            },
+            in: Double(range.lowerBound)...Double(range.upperBound),
+            step: doubleStep,
+            isIntValue: true,
+            label: label,
+            labelMark: labelMark,
+            minimumValueLabel: minimumValueLabel,
+            maximumValueLabel: maximumValueLabel,
+            onEditingChanged: onEditingChanged
+        )
+    }
+    private
+        init(
+            value: Binding<Double>,
+            in range: ClosedRange<Double>,
+            step: Double.Stride? = nil,
+            isIntValue: Bool,
+            label: @escaping () -> Label = { EmptyView() },
+            labelMark: @escaping (_: Double) -> LabelMarkContent = { d in
+                Text("\(d.formatted(.number.precision(.fractionLength(1))))")
+                    .font(.caption2)
+            },
+            minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
+            maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
+            onEditingChanged: @escaping (Bool) -> Void = { _ in }
+        )
+    {
+        _sliderValue = value  //Binding { Double(value.wrappedValue) } set: { value.wrappedValue = V($0) }
+        self.range = Double(range.lowerBound)...Double(range.upperBound)
+        self.step = if let step { Double(step) } else { nil }
+        self.isIntValue = isIntValue
         self.label = label
         self.labelMark = labelMark
         self.minimumValueLabel = minimumValueLabel
@@ -133,8 +122,8 @@ public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View>:
         self.onEditingChanged = onEditingChanged
         self._sliderHelper = State(
             initialValue: SliderHelper(range: range, isInt: false, step: step))
-//        print("NewSlider Init done: \(Date.now)")
     }
+
     @Environment(\.sliderStyle) var sliderStyle
     @State var sliderHelper: SliderHelper
 
@@ -207,7 +196,7 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
             sliderHelper.sliderAnimation, value: sliderHelper.lastSliderValue
         )
         .sliderAccessibility(sliderValue: $sliderValue)
-        .onChange(of: sliderHelper.isDragging ) {
+        .onChange(of: sliderHelper.isDragging) {
             onEditingChanged(sliderHelper.isDragging)
         }
     }
@@ -259,7 +248,7 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
                 .foregroundStyle(.green)
                 .glow(color: .green, radius: 1)
                 .opacity(0.05 + value * 0.95)
-                .scaleEffect(1/3 + (2/3)*value )
+                .scaleEffect(1 / 3 + (2 / 3) * value)
         }
 
         Text("Volume")
@@ -367,9 +356,11 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
         NewSlider(
             value: $num, in: range,
             label: {
-                Text("\(num.formatted(.number.precision(.fractionLength(0...1))))")
-                    .foregroundStyle(color)
-                    .frame(minWidth: 30)
+                Text(
+                    "\(num.formatted(.number.precision(.fractionLength(0...1))))"
+                )
+                .foregroundStyle(color)
+                .frame(minWidth: 30)
             },
             minimumValueLabel: { Text("0") },
             maximumValueLabel: { Text("20") },
