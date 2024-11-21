@@ -15,6 +15,7 @@ extension SliderStyle {
         var style = SliderStyle("Volume Control")
         style.sliderIndicator = [.tintedTrackMarks]
         style.orientation = .radial
+        style.thumbWidth = 0
         style.tintCentredOn = .lowest
         style.trackColor = .clearIsh
         style.trackHeight = 70

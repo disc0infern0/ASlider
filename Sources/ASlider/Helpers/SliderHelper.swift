@@ -44,8 +44,8 @@ final class SliderHelper {
     /// The padding necessary to a linear slider track so that the thumb and/or trackmarks can be shown without
     /// exceeding the given space
     var trackBuffer: Double = 21
-
-    var trackMarkDynamicSizing: Bool {
+    /// Allows display of trackmarks that increase in size at the drag point of the slider.
+    internal var trackMarkDynamicSizing: Bool {
         if case .dynamicSizing = sliderStyle.trackMarkStyle {
             true
         } else {
@@ -54,7 +54,6 @@ final class SliderHelper {
     }
     init(
         range: ClosedRange<Double>, isInt: Bool, step: Double? = nil
-            //        ,style: SliderStyle, rect: CGRect
     ) {
         guard range.lowerBound < range.upperBound else {
             fatalError("Range start must be lower than upper bound")
@@ -63,8 +62,6 @@ final class SliderHelper {
         self.isInt = isInt
         self.step = step
         self.sliderStyle = SliderStyle.classic
-        //        self.sliderStyle = style
-        //        self.rect = rect
         self.lastSliderValue = range.lowerBound
     }
     func updateStyle(_ style: SliderStyle) {
@@ -75,10 +72,10 @@ final class SliderHelper {
         }
         sliderStyle.thumbWidth =
             style.sliderIndicator.contains(.thumb) ? style.thumbWidth : 0
-
-        if sliderStyle.sliderIndicator.contains(.tintedTrackMarks) {
-            sliderStyle.trackHeight = sliderStyle.trackMarkHeight
-        }
+//      // Nanny state protectionism?
+//        if sliderStyle.sliderIndicator.contains(.tintedTrackMarks) {
+//            sliderStyle.trackHeight = sliderStyle.trackMarkHeight
+//        }
 
         if let step {
             /// When the step parameter is used, Apple switches the slider to snapping mode
@@ -87,23 +84,22 @@ final class SliderHelper {
             // thumb switches to a capsule, amd track marks are turned on
             #if os(macOS)
                 sliderStyle.thumbSymbol = .capsule
-                sliderStyle.thumbWidth = 10
+                sliderStyle.thumbWidth = 9.5 // visual approximation of Apple's step slider
                 sliderStyle.trackMarkInterval = .every(step)
                 sliderStyle.trackMarkActiveColors =
-                    sliderStyle.trackMarkInActiveColors
+                sliderStyle.trackMarkInActiveColors
             #endif
         }
 
         // correct for clear colour track not being clickable
         if sliderStyle.trackColor == .clear {
-            sliderStyle.trackColor = .clearIsh  // almost clear. more clear than somewhat. less clear than totally transparent.
-            let maxTrackMarkHeight =
-                if case .dynamicSizing(_, let growth) = sliderStyle
-                    .trackMarkStyle
-                {
+            sliderStyle.trackColor = .clearIsh  // almost clear. more clear than somewhat. less clear than totally.
+            sliderStyle.trackHeight =
+                if case .dynamicSizing(_, let growth) = sliderStyle.trackMarkStyle {
                     sliderStyle.trackMarkHeight * growth
-                } else { sliderStyle.trackMarkHeight }
-            sliderStyle.trackHeight = maxTrackMarkHeight
+                } else { 
+                    sliderStyle.trackMarkHeight 
+                }
         }
     }
 

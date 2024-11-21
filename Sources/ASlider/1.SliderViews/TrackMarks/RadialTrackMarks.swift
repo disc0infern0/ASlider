@@ -48,17 +48,13 @@ struct RadialTrackMarks: View, Animatable {
     }
     .frame(width: 320, height: 400)
     .readFrame {
-        style.sliderIndicator = [.thumb, .tintedTrackMarks]
+        style.sliderIndicator = [.tintedTrackMarks]
         style.trackMarkInterval = .auto
+        style.trackMarkActiveColors = [.green]
         style.trackMarkInActiveColors = [.classicThumb]
         style.trackMarkWidth = 30
         style.trackMarkHeight = 70
-        style.thumbWidth = 20
-        style.thumbColorAtRest = .red
-        style.thumbSymbol = .circle
-        style.trackHeight = 10
-        style.trackColor = .orange
-        style.trackMarkActiveColors = [.green]
+        style.trackHeight = 40
         sliderHelper.updateStyle(style)
         sliderHelper.setTrackSize(to: $0)
     }
@@ -68,7 +64,7 @@ struct RadialTrackMarks: View, Animatable {
     @Previewable @State var sliderValue: Double = 0.7
 
     ZStack {
-        NewSlider(value: $sliderValue, in: 0...1)
+        NewSlider(value: $sliderValue, in: 0.0 ... 1.0)
     }
     .frame(width: 400, height: 400)
     .sliderStyle(.volumeControl)

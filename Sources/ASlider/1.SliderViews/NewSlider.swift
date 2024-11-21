@@ -7,6 +7,36 @@
 
 import SwiftUI
 
+/// Creates a slider to select a value from a given range, which displays the provided labels.
+/// 
+/// init(value:in:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)   
+/// 
+/// init<V>(
+/// value: Binding<V>,   
+/// in bounds: ClosedRange<V> = 0...1,   
+/// @ViewBuilder label: () -> Label,   
+/// @ViewBuilder minimumValueLabel: () -> ValueLabel,   
+/// @ViewBuilder maximumValueLabel: () -> ValueLabel,   
+/// onEditingChanged: @escaping (Bool) -> Void = { _ in }
+/// ) 
+/// where `V`is a BinaryFloatingPoint, or an Int   
+/// 
+/// Available when Label conforms to View and ValueLabel conforms to View.
+/// # Parameters   
+/// ### value
+/// The selected value within bounds.
+/// ### bounds
+/// The range of the valid values. Defaults to 0...1.
+/// ### label
+/// A View that describes the purpose of the instance. Not all slider styles show the label, but even in those cases, SwiftUI uses the label for accessibility. For example, VoiceOver uses the label to identify the purpose of the slider.
+/// ### minimumValueLabel
+/// A view that describes bounds.lowerBound.
+/// ### maximumValueLabel
+/// A view that describes bounds.lowerBound.
+/// ### onEditingChanged
+/// A callback for when editing begins and ends.
+/// 
+/// # Description   
 /// A slider where the track can be tapped, the thumb can be dragged, and a label can be displayed.
 /// Additionally left and right arrows can be used to decrement/increment the values, as can various accessibility actions.
 /// Styling for the slider can be done via the sliderStyle view modifier which accepts a SliderStyle struct and, optionally,
@@ -15,15 +45,10 @@ import SwiftUI
 ///  .classic which emulates the Apple slider,
 ///  .newClassic which updates the Apple slider with a bounce animation to the thumb and transparent selection
 
-public struct NewSlider<
-    Label: View, LabelMarkContent: View, ValueLabel: View,
-    V: BinaryFloatingPoint
->: View
-where V.Stride: BinaryFloatingPoint {
+public struct NewSlider<Label: View, LabelMarkContent: View, 
+                            ValueLabel: View, V: BinaryFloatingPoint >
+    : View where V.Stride: BinaryFloatingPoint {
 
-    //public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View>:
-    //    View
-    //{
     @Binding var sliderValue: Double
     let range: ClosedRange<Double>
     let step: Double?
@@ -35,7 +60,7 @@ where V.Stride: BinaryFloatingPoint {
 
     let isIntValue: Bool  // record whether we are called with an integer binding or not
 
-    /// Classic Apple Slider init (with addition of labelMark to display slider values under the slider)
+    // Classic Apple Slider init (with addition of labelMark to display slider values under the slider)
     public init(
         value: Binding<V>,
         in range: ClosedRange<V>,
@@ -80,11 +105,8 @@ where V.Stride: BinaryFloatingPoint {
     ) {
         let doubleStep: Double? = if let step { Double(step) } else { nil }
         self.init(
-            value: Binding {
-                Double(value.wrappedValue)
-            } set: {
-                value.wrappedValue = Int($0.rounded())
-            },
+            value: Binding { Double(value.wrappedValue) } 
+                set: { value.wrappedValue = Int($0.rounded()) },
             in: Double(range.lowerBound)...Double(range.upperBound),
             step: doubleStep,
             isIntValue: true,
@@ -111,7 +133,7 @@ where V.Stride: BinaryFloatingPoint {
             onEditingChanged: @escaping (Bool) -> Void = { _ in }
         )
     {
-        _sliderValue = value  //Binding { Double(value.wrappedValue) } set: { value.wrappedValue = V($0) }
+        _sliderValue = value
         self.range = Double(range.lowerBound)...Double(range.upperBound)
         self.step = if let step { Double(step) } else { nil }
         self.isIntValue = isIntValue
@@ -147,6 +169,9 @@ where V.Stride: BinaryFloatingPoint {
             sliderHelper.updateStyle(sliderStyle)
         }
         .environment(sliderHelper)
+        .accessibilityRepresentation {
+            Slider(value: $sliderValue, in: range, label: label)
+        }
     }
 
     @ViewBuilder
@@ -270,7 +295,7 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
         "\((value*10).formatted(.number.precision(.fractionLength(0...1))))"
     }
     ZStack {
-        NewSlider(value: $value, in: 0...1) {
+        NewSlider(value: $value, in: 0.0 ... 1.0) {
             Text(verbatim: valueString)
                 .font(myfont)
         }
@@ -289,12 +314,12 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
     let range: ClosedRange<Double> = -10...10
     VStack {
         Text("classic")
-        NewSlider(value: $num, in: range, step: 2) {
+        NewSlider(value: $num, in: range, step: 2.0 ) {
             Text("\(String(format:"%.2f", num) )")
                 .frame(width: 60)
         }
         .padding(5)
-        Slider(value: $num, in: range, step: 2) {
+        SwiftUI.Slider(value: $num, in: range, step: 2) {
             Text("\(String(format:"%.2f", num) )")
                 .frame(width: 60)
         }
@@ -317,7 +342,7 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
                 .frame(width: 60)
         }
         .padding(5)
-        Slider(value: $num, in: range) {
+        SwiftUI.Slider(value: $num, in: range) {
             Text("\(String(format:"%.2f", num) )")
                 .frame(width: 60)
         }
@@ -331,7 +356,7 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
 
 #Preview("last value") {
     @Previewable @State var num: Double = 2.0
-    let range: ClosedRange<Double> = -10...10
+    let range: ClosedRange<Double> = -10.0 ... 10.0
     VStack {
         Text("Last Value")
         NewSlider(value: $num, in: range)
@@ -341,7 +366,7 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
                 s.trackTintColor = .accentColor
                 s.thumbWidth = 20
             }
-        Slider(value: $num, in: range)
+        SwiftUI.Slider(value: $num, in: range)
     }
     .padding(20)
     .frame(width: 400, height: 100)

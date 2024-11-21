@@ -20,23 +20,14 @@ struct Thumb: View {
     }
 
     var body: some View {
-        if sliderHelper.sliderIndicator.contains(.thumb) {
+        if sliderHelper.thumbWidth > 0 && sliderHelper.sliderIndicator.contains(.thumb) {
+            
             TheThumb(sliderValue: sliderValue)
                 .onKeyPress(keys: [.leftArrow, .rightArrow], action: arrowKeyPress)
                 .onChange(of: sliderValueProxy) {
                     sliderHelper.setSlider(value: $sliderValue, to: sliderValueProxy) }
                 .onChange(of: sliderValue, initial: true) { sliderValueProxy = sliderValue }
-//            switch sliderStyle.orientation {
-//                case .linear:
-//                    TheThumb(sliderValue: sliderValue)
-//                        .onKeyPress(keys: [.leftArrow, .rightArrow], action: arrowKeyPress)
-//                        .onChange(of: sliderValueProxy) {
-//                            sliderHelper.setSlider(value: $sliderValue, to: sliderValueProxy) }
-//                        .onChange(of: sliderValue, initial: true) { sliderValueProxy = sliderValue }
-//                case .radial:
-//                    RadialThumb(value: sliderValue)
-//            }
-        }
+        } 
     }
 }
 
