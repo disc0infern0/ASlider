@@ -45,10 +45,9 @@ import SwiftUI
 ///  .classic which emulates the Apple slider,
 ///  .newClassic which updates the Apple slider with a bounce animation to the thumb and transparent selection
 
-public struct NewSlider<Label: View, LabelMarkContent: View, 
-                            ValueLabel: View, V: BinaryFloatingPoint >
-    : View where V.Stride: BinaryFloatingPoint {
 
+
+public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View> : View {
     @Binding var sliderValue: Double
     let range: ClosedRange<Double>
     let step: Double?
@@ -61,7 +60,7 @@ public struct NewSlider<Label: View, LabelMarkContent: View,
     let isIntValue: Bool  // record whether we are called with an integer binding or not
 
     // Classic Apple Slider init (with addition of labelMark to display slider values under the slider)
-    public init(
+    public init<V: BinaryFloatingPoint>  (
         value: Binding<V>,
         in range: ClosedRange<V>,
         step: V.Stride? = nil,
@@ -73,7 +72,7 @@ public struct NewSlider<Label: View, LabelMarkContent: View,
         minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
         maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
         onEditingChanged: @escaping (Bool) -> Void = { _ in }
-    ) {
+    )  where V.Stride: BinaryFloatingPoint {
         self.init(
             value: Binding {
                 Double(value.wrappedValue)
@@ -90,10 +89,10 @@ public struct NewSlider<Label: View, LabelMarkContent: View,
             onEditingChanged: onEditingChanged
         )
     }
-    public init(
-        value: Binding<Int>,
-        in range: ClosedRange<Int>,
-        step: Int? = nil,
+    public init<U: SignedInteger>(
+        value: Binding<U>,
+        in range: ClosedRange<U>,
+        step: U.Stride? = nil,
         label: @escaping () -> Label = { EmptyView() },
         labelMark: @escaping (_: Double) -> LabelMarkContent = { d in
             Text("\(d.formatted(.number.precision(.fractionLength(1))))")
@@ -102,13 +101,12 @@ public struct NewSlider<Label: View, LabelMarkContent: View,
         minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
         maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
         onEditingChanged: @escaping (Bool) -> Void = { _ in }
-    ) {
-        let doubleStep: Double? = if let step { Double(step) } else { nil }
+    ) where U.Stride: SignedInteger {
         self.init(
             value: Binding { Double(value.wrappedValue) } 
-                set: { value.wrappedValue = Int($0.rounded()) },
+                set: { value.wrappedValue = U($0.rounded()) },
             in: Double(range.lowerBound)...Double(range.upperBound),
-            step: doubleStep,
+            step:  step == nil ? nil : Double(step!),
             isIntValue: true,
             label: label,
             labelMark: labelMark,
@@ -117,20 +115,16 @@ public struct NewSlider<Label: View, LabelMarkContent: View,
             onEditingChanged: onEditingChanged
         )
     }
-    private
-        init(
+    package init(
             value: Binding<Double>,
             in range: ClosedRange<Double>,
             step: Double.Stride? = nil,
             isIntValue: Bool,
-            label: @escaping () -> Label = { EmptyView() },
-            labelMark: @escaping (_: Double) -> LabelMarkContent = { d in
-                Text("\(d.formatted(.number.precision(.fractionLength(1))))")
-                    .font(.caption2)
-            },
-            minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-            maximumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
-            onEditingChanged: @escaping (Bool) -> Void = { _ in }
+            label: @escaping () -> Label,
+            labelMark: @escaping (_: Double) -> LabelMarkContent,
+            minimumValueLabel: @escaping () -> ValueLabel,
+            maximumValueLabel: @escaping () -> ValueLabel,
+            onEditingChanged: @escaping (Bool) -> Void
         )
     {
         _sliderValue = value
@@ -332,21 +326,22 @@ struct TheSlider<Label: View, LabelMarkContent: View>: View {
     .frame(width: 400, height: 200)
 }
 
-#Preview("classic") {
-    @Previewable @State var num: Double = 2.0
-    let range: ClosedRange<Double> = -10...10
+#Preview("classic int") {
+    @Previewable @State var num: Int = 2
+    let range: ClosedRange<Int> = -10...10
     VStack {
         Text("classic")
         NewSlider(value: $num, in: range) {
-            Text("\(String(format:"%.2f", num) )")
+//            Text("\(String(format:"%.2f", num) )")
+            Text("\(num)")
                 .frame(width: 60)
         }
         .padding(5)
-        SwiftUI.Slider(value: $num, in: range) {
-            Text("\(String(format:"%.2f", num) )")
-                .frame(width: 60)
-        }
-        .padding(5)
+//        SwiftUI.Slider(value: $num, in: range) {
+//            Text("\(String(format:"%.2f", num) )")
+//                .frame(width: 60)
+//        }
+//        .padding(5)
     }
     .sliderStyle(.classic) { style in
         style.thumbWidth = 20

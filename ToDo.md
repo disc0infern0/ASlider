@@ -54,3 +54,6 @@ The amount should be calculated as half a standard track mark
 To align the set slidervalue and get slidervalue functions for radial and linear sliders, calculate positions along the slider as a Double.
 For a radial slider, a given slider value should be translated to a track value by calculating the radians of the angle. 
 For a linear slider, a given slider value should be translated to a track value by scaling based on the track length..
+
+## Init
+Allow use of any value conforming to the SignedInteger protocol
