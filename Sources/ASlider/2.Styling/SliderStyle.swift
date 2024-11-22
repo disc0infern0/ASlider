@@ -83,7 +83,8 @@ public struct SliderStyle: Equatable, Hashable {
             if case .dynamicSizing = self { true } else { false }
         }
     }
-    /// The track mark style, which defaults to `.fixedSize`
+    /// Indicate whether track marks displayed on the slider should be a fixed size (`.fiexedSize`), or if the height will vary based on the current drag position
+    /// Defaults to `.fixedSize`
     public var trackMarkStyle: TrackMarkStyle = .fixedSize
     /// The animation to use for the slider thumb and tint
     public var sliderAnimation: Animation = .smooth(duration: 0.2)
@@ -126,15 +127,20 @@ public struct SliderStyle: Equatable, Hashable {
     /// The interval for labels underneath a linear slider. If set to `.none`, then labels will not be displayed
     public var labelInterval: TrackIntervals = .none
 
-    /// Specify whete the tint position should start from. By default, it is the range lowerbound
+    /// Specify whether the tint position should start from. By default, it is the range lowerbound
     public var tintCentredOn: CentredOn = .lowest
+    
+    /// The color of the tint
     public var trackTintColor: Color = .accentColor
+    
+    /// Specify how much shadow is displayed around the track
     public var trackShadow: TrackShadow = .radius(0.3)
-    var trackShadowRadius: Double {
+    internal var trackShadowRadius: Double {
         switch trackShadow {
             case .radius(let r): return r
         }
     }
+    /// Specify the color of  the shadow displayed around the track
     public var trackShadowColor: Color {
         get { 
             if let i_trackShadowColor { 
@@ -144,7 +150,10 @@ public struct SliderStyle: Equatable, Hashable {
         set { i_trackShadowColor = newValue }
     }
     internal var i_trackShadowColor: Color?
+    
+    /// Specify the shape or symbol to be used as a draggable thumb indicator of slider value
     public var thumbSymbol: ThumbShape = .circle
+    /// Show a tinted border on thumb shapes?
     public var thumbTintedBorder = false
     public var thumbColorAtRest: Color = Color.classicThumb
     public var thumbColorDragging: Color = Color.classicThumb.opacity(0.4)

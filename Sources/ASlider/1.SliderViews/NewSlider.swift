@@ -95,7 +95,7 @@ public struct NewSlider<Label: View, LabelMarkContent: View, ValueLabel: View> :
         step: U.Stride? = nil,
         label: @escaping () -> Label = { EmptyView() },
         labelMark: @escaping (_: Double) -> LabelMarkContent = { d in
-            Text("\(d.formatted(.number.precision(.fractionLength(1))))")
+            Text("\(d.formatted(.number.precision(.fractionLength(0))))")
                 .font(.caption2)
         },
         minimumValueLabel: @escaping () -> ValueLabel = { EmptyView() },
